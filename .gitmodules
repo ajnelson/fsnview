@@ -7,3 +7,6 @@
 [submodule "deps/uxtaf"]
 	path = deps/uxtaf
 	url = git@bitbucket.org:ssrc/uxtaf.git
+[submodule "deps/dfxml"]
+	path = deps/dfxml
+	url = git@bitbucket.org:ssrc/dfxml.git
