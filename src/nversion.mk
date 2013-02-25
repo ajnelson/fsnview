@@ -57,7 +57,12 @@ fiwalk.dfxml: $(FIWALK) $(IMAGE)
 py360.dfxml: $(PY360_PYS) $(IMAGE)
 	echo "In progress..." >py360.status.log
 	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo -n $$? >py360.status.log
-	if [ -r py360out.dfxml ]; then mv py360out.dfxml py360.dfxml; fi
+	if [ -r py360out.dfxml ]; then \
+	  mv py360out.dfxml py360.dfxml; \
+	else \
+	  echo "py360out.dfxml not found."; \
+	  exit 5; \
+	fi
 
 uxtaf.dfxml: $(UXTAF) $(IMAGE)
 	echo "In progress..." >uxtaf.status.log
