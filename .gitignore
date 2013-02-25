@@ -15,6 +15,7 @@ Makefile
 /depcomp
 /install-sh
 /missing
+/fsnview-*.tar.gz
 
 # fsnview-generated files
 /src/fsnview
