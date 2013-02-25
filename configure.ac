@@ -19,6 +19,7 @@ AC_PROG_MAKE_SET
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
+                 deps/Makefile
                  src/fsnview
                  src/Makefile])
 AC_OUTPUT
