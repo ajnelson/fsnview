@@ -2,11 +2,14 @@
 
 #Usage: ./nversion.mk IMAGE=full_path_to_image_file
 
-IDIFFERENCE_PY=~/console-analysis/deps/geoproc/deps/dfxml/python/idifference.py
+#This really should be over-ridden.
+PKGDATADIR:=/usr/local/share/fsnview
+
+IDIFFERENCE_PY=$(PKGDATADIR)/python3/idifference.py
 IDIFFERENCE_CMD=python3 $(IDIFFERENCE_PY)
 FIWALK:=$(shell which fiwalk)
-PY360_REPORT360_PY:=~/console-analysis/deps/py360/report360.py
-PY360_PARTITION360_PY=~/console-analysis/deps/py360/py360/partition.py
+PY360_REPORT360_PY:=$(PKGDATADIR)/python2/report360.py
+PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=python $(PY360_REPORT360_PY) -x
 UXTAF:=$(shell which uxtaf)

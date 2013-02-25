@@ -1,8 +1,8 @@
 #!/bin/bash
 
 prefix=@prefix@
-pkgprefix=@pkgprefix@
+pkgdatadir=@datarootdir@/@PACKAGE@
 
 imagefile=$1
 
-"$pkgprefix/nversion.mk" "$imagefile"
+"$pkgdatadir/nversion.mk" PKGDATADIR="$pkgdatadir" IMAGE="$imagefile"
