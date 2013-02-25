@@ -4,3 +4,6 @@
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
 	url = git@bitbucket.org:ssrc/sleuthkit.git
+[submodule "deps/uxtaf"]
+	path = deps/uxtaf
+	url = git@bitbucket.org:ssrc/uxtaf.git
