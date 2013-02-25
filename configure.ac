@@ -3,7 +3,8 @@
 
 AC_PREREQ([2.69])
 AC_INIT(fsnview, 0.0.0, ajnelson@cs.ucsc.edu)
-AM_INIT_AUTOMAKE(fsnview,0.0.0)
+AC_CONFIG_SRCDIR([src/fsnview.in])
+AM_INIT_AUTOMAKE
 
 # Checks for programs.
 AC_PROG_INSTALL
