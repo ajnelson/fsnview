@@ -1,0 +1,3 @@
+[submodule "deps/py360"]
+	path = deps/py360
+	url = git@bitbucket.org:ssrc/py360.git
