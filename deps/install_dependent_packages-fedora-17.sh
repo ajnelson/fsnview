@@ -10,5 +10,7 @@ if [ -r /etc/fedora-release ]; then
     gcc-c++ \
     git \
     libtool \
-    python3
+    openssl-devel \
+    python3 \
+    zlib-devel
 fi

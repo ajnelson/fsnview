@@ -9,8 +9,10 @@ if [ -r /etc/debian_version ]; then
     autoconf \
     g++ \
     git \
+    libssl-dev \
     libtool \
-    make
+    make \
+    zlib1g-dev
 fi
 #TODO
 #    afflib-tools \
@@ -22,4 +24,3 @@ fi
 #    libxml2-utils \
 #    python3 \
 #    python-dev \
-#    zlib1g-dev

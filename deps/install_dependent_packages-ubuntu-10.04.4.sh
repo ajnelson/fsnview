@@ -8,7 +8,9 @@ if [ -r /etc/debian_version ]; then
   sudo apt-get install \
     autoconf \
     g++ \
-    libtool
+    libssl-dev \
+    libtool \
+    zlib1g-dev
 fi
 #TODO
 #    afflib-tools \
@@ -21,4 +23,3 @@ fi
 #    libxml2-utils \
 #    python3 \
 #    python-dev \
-#    zlib1g-dev
