@@ -9,6 +9,7 @@ if [ -r /etc/debian_version ]; then
     autoconf \
     automake \
     g++ \
+    git \
     libtool \
     make
 fi
