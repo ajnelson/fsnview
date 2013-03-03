@@ -4,8 +4,6 @@ prefix=@prefix@
 pkgdatadir=@datarootdir@/@PACKAGE@
 PYTHON=@PYTHON@
 
-echo "Debug: \$PYTHON=$PYTHON" >&2
-
 if [ $# -lt 1 ]; then
   echo "Usage: $0 disk_image" >&2
   exit 1
