@@ -61,6 +61,7 @@ fiwalk.dfxml: $(FIWALK) $(IMAGE)
 
 py360.dfxml: $(PY360_PYS) $(IMAGE)
 	echo "In progress..." >py360.status.log
+	rm -f py360out.dfxml
 	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo -n $$? >py360.status.log
 	if [ -r py360out.dfxml ]; then \
 	  mv py360out.dfxml py360.dfxml; \
