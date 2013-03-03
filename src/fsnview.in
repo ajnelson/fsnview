@@ -14,6 +14,7 @@ fi
 imagefile=$1
 
 "$pkgdatadir/nversion.mk" \
+  FIWALK_MAYBE_ALLOC_ONLY="-O" \
   PKGDATADIR="$pkgdatadir" \
   PREFIX="$prefix" \
   PYTHON="$PYTHON" \

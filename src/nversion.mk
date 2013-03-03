@@ -17,6 +17,8 @@ PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
 UXTAF:=$(PREFIX)/bin/uxtaf
 
+FIWALK_MAYBE_ALLOC_ONLY:=
+
 TARGETS = \
   fiwalk_to_py360.diffs.txt \
   fiwalk_to_uxtaf.diffs.txt \
@@ -55,7 +57,7 @@ uxtaf_to_py360.diffs.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 
 fiwalk.dfxml: $(FIWALK) $(IMAGE)
 	echo "In progress..." >fiwalk.status.log
-	$(FIWALK) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo -n $$? >fiwalk.status.log
+	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo -n $$? >fiwalk.status.log
 
 py360.dfxml: $(PY360_PYS) $(IMAGE)
 	echo "In progress..." >py360.status.log
