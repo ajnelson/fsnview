@@ -13,6 +13,8 @@ AC_PROG_MAKE_SET
 dnl Search for Python 2.7.3, which catches the MacPorts version in OS X.  Linuxes should be on 2.7.3 as well.
 AM_PATH_PYTHON(2.7.3)
 
+#TODO Check for Python modules: Crypto, fuse
+
 # Checks for libraries.
 
 # Checks for header files.

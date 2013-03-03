@@ -7,6 +7,7 @@
 set -e
 set -x
 
+#TODO Get realpath of $INSTALLDIR
 case $1 in
   local )
     MAKEINSTALL="make install"
