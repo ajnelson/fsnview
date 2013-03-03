@@ -39,7 +39,7 @@ popd
 
 echo "Note: installing uxtaf" >&2
 pushd $REPODIR/deps/uxtaf
-./bootstrap.sh && ./configure --prefix=$INSTALLDIR --without-libewf && make -j && $MAKEINSTALL
+./bootstrap.sh && ./configure --prefix=$INSTALLDIR && make -j && $MAKEINSTALL
 popd
 
 echo "Done."
