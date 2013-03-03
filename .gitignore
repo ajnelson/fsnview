@@ -16,6 +16,7 @@ Makefile
 /install-sh
 /missing
 /fsnview-*.tar.gz
+/py-compile
 
 # fsnview-generated files
 /src/fsnview

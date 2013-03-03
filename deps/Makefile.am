@@ -1,13 +1,13 @@
 fsnpydir = ${pkgdatadir}/python2
 fsnpysubdir = ${pkgdatadir}/python2/py360
 
-dist_fsnpy_SCRIPTS = \
+dist_fsnpy_PYTHON = \
   py360/dfxml.py \
   py360/gamertags.py \
   py360/png_carve.py \
   py360/report360.py
 
-dist_fsnpysub_SCRIPTS = \
+dist_fsnpysub_PYTHON = \
   py360/py360/__init__.py \
   py360/py360/account.py \
   py360/py360/constants.py \
