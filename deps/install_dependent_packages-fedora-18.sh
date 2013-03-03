@@ -11,6 +11,7 @@ if [ -r /etc/fedora-release ]; then
     git \
     libtool \
     openssl-devel \
+    python-crypto \
     python3 \
     zlib-devel
 fi
