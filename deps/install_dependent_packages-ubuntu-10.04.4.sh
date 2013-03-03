@@ -10,6 +10,7 @@ if [ -r /etc/debian_version ]; then
     g++ \
     libssl-dev \
     libtool \
+    python-crypto \
     zlib1g-dev
 fi
 #TODO

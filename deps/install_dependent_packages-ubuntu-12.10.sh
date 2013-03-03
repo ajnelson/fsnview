@@ -12,6 +12,7 @@ if [ -r /etc/debian_version ]; then
     libssl-dev \
     libtool \
     make \
+    python-crypto \
     zlib1g-dev
 fi
 #TODO

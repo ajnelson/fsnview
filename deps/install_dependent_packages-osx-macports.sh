@@ -1,7 +1,9 @@
 #!/bin/bash
 
-#TODO Find the most convenient way to install this Python2 package (needed for py360):
-#Crypto.Cipher
+set -e
+set -x
 
 sudo port install \
+  py27-crypto \
+  python27 \
   python32
