@@ -3,16 +3,19 @@
 #Usage: ./nversion.mk IMAGE=full_path_to_image_file
 
 #This really should be over-ridden.
-PKGDATADIR:=/usr/local/share/fsnview
+PREFIX:=/usr/local
+PYTHON:=$(shell which python)
+PACKAGE:=fsnview
+PKGDATADIR:=$(PREFIX)/share/$(PACKAGE)
 
 IDIFFERENCE_PY=$(PKGDATADIR)/python3/idifference.py
 IDIFFERENCE_CMD=python3 $(IDIFFERENCE_PY)
-FIWALK:=$(shell which fiwalk)
+FIWALK:=$(PREFIX)/bin/fiwalk
 PY360_REPORT360_PY:=$(PKGDATADIR)/python2/report360.py
 PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
-PY360_CMD=python $(PY360_REPORT360_PY) -x
-UXTAF:=$(shell which uxtaf)
+PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
+UXTAF:=$(PREFIX)/bin/uxtaf
 
 TARGETS = \
   fiwalk_to_py360.diffs.txt \

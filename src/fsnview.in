@@ -2,7 +2,19 @@
 
 prefix=@prefix@
 pkgdatadir=@datarootdir@/@PACKAGE@
+PYTHON=@PYTHON@
+
+echo "Debug: \$PYTHON=$PYTHON" >&2
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 disk_image" >&2
+  exit 1
+fi
 
 imagefile=$1
 
-"$pkgdatadir/nversion.mk" PKGDATADIR="$pkgdatadir" IMAGE="$imagefile"
+"$pkgdatadir/nversion.mk" \
+  PKGDATADIR="$pkgdatadir" \
+  PREFIX="$prefix" \
+  PYTHON="$PYTHON" \
+  IMAGE="$imagefile"
