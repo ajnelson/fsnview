@@ -3,21 +3,21 @@
 #Usage: ./nversion.mk IMAGE=full_path_to_image_file
 
 #This really should be over-ridden.
-PREFIX:=/usr/local
-PYTHON:=$(shell which python)
-PACKAGE:=fsnview
-PKGDATADIR:=$(PREFIX)/share/$(PACKAGE)
+PREFIX?=/usr/local
+PYTHON?=$(shell which python)
+PACKAGE?=fsnview
+PKGDATADIR?=$(PREFIX)/share/$(PACKAGE)
 
 IDIFFERENCE_PY=$(PKGDATADIR)/python3/idifference.py
 IDIFFERENCE_CMD=python3 $(IDIFFERENCE_PY)
-FIWALK:=$(PREFIX)/bin/fiwalk
-PY360_REPORT360_PY:=$(PKGDATADIR)/python2/report360.py
+FIWALK?=$(PREFIX)/bin/fiwalk
+PY360_REPORT360_PY?=$(PKGDATADIR)/python2/report360.py
 PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
-UXTAF:=$(PREFIX)/bin/uxtaf
+UXTAF?=$(PREFIX)/bin/uxtaf
 
-FIWALK_MAYBE_ALLOC_ONLY:=
+FIWALK_MAYBE_ALLOC_ONLY?=
 
 TARGETS = \
   fiwalk_to_py360.diffs.txt \
@@ -29,7 +29,7 @@ TARGETS = \
 
 all: report
 
-#report: Fake-file rule
+#report: Fake-file rule, should move to calling Bash script
 report: $(TARGETS)
 	@echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
 	@more *.status.log | cat
@@ -63,6 +63,7 @@ py360.dfxml: $(PY360_PYS) $(IMAGE)
 	echo "In progress..." >py360.status.log
 	rm -f py360out.dfxml
 	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo -n $$? >py360.status.log
+	#TODO Check exit status here
 	if [ -r py360out.dfxml ]; then \
 	  mv py360out.dfxml py360.dfxml; \
 	else \
