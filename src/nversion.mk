@@ -32,18 +32,8 @@ TARGETS = \
   mactimeline.py360.txt \
   mactimeline.uxtaf.txt 
 
-all: report
+all: $(TARGETS)
 
-#report: Fake-file rule, should move to calling Bash script
-report: $(TARGETS)
-	@echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
-	@grep '^' *.status.log | cat
-	@echo ""
-	@echo "Review these files for between-tool differences:"
-	@ls diffs*.txt
-	@echo ""
-	@echo "Review these files for file system timelines according to each tool:"
-	@ls mactimeline*.txt
 #TODO Add status and error logs to each timeline invocation.
 
 mactimeline.fiwalk.txt: $(TIMELINE_PY) fiwalk.dfxml

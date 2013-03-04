@@ -10,6 +10,10 @@ if [ $# -lt 1 ]; then
 fi
 
 imagefile=$1
+imagefilebn=$(basename "$imagefile")
+outdir="${imagefilebn%.*}"
+
+echo "fsnview: Debug: outdir: $outdir" >&2
 
 "$pkgdatadir/nversion.mk" \
   FIWALK_MAYBE_ALLOC_ONLY="-O" \
@@ -17,3 +21,13 @@ imagefile=$1
   PREFIX="$prefix" \
   PYTHON="$PYTHON" \
   IMAGE="$imagefile"
+
+# Run report
+echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
+grep '^' *.status.log | cat
+echo ""
+echo "Review these files for between-tool differences:"
+ls diffs*.txt
+echo ""
+echo "Review these files for file system timelines according to each tool:"
+ls mactimeline*.txt
