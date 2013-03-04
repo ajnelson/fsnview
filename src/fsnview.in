@@ -15,6 +15,10 @@ outdir="${imagefilebn%.*}"
 
 echo "fsnview: Debug: outdir: $outdir" >&2
 
+echo "fsnview: Debug: Descending into output directory \"$outdir\"" >&2
+mkdir -p "$outdir"
+pushd "$outdir" >/dev/null
+
 "$pkgdatadir/nversion.mk" \
   FIWALK_MAYBE_ALLOC_ONLY="-O" \
   PKGDATADIR="$pkgdatadir" \
@@ -31,3 +35,5 @@ ls diffs*.txt
 echo ""
 echo "Review these files for file system timelines according to each tool:"
 ls mactimeline*.txt
+
+popd >/dev/null
