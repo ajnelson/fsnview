@@ -16,6 +16,8 @@ PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
 UXTAF?=$(PREFIX)/bin/uxtaf
+TIMELINE_PY=$(PKGDATADIR)/python3/demo_mac_timeline.py
+TIMELINE_CMD=python3 $(TIMELINE_PY)
 
 FIWALK_MAYBE_ALLOC_ONLY?=
 
@@ -25,7 +27,10 @@ TARGETS = \
   py360_to_fiwalk.diffs.txt \
   py360_to_uxtaf.diffs.txt \
   uxtaf_to_fiwalk.diffs.txt \
-  uxtaf_to_py360.diffs.txt 
+  uxtaf_to_py360.diffs.txt \
+  mactimeline.fiwalk.txt \
+  mactimeline.py360.txt \
+  mactimeline.uxtaf.txt 
 
 all: report
 
@@ -34,8 +39,21 @@ report: $(TARGETS)
 	@echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
 	@grep '^' *.status.log | cat
 	@echo ""
-	@echo "Review these files:"
+	@echo "Review these files for between-tool differences:"
 	@ls *.diffs.txt
+	@echo ""
+	@echo "Review these files for file system timelines according to each tool:"
+	@ls mactimeline*.txt
+#TODO Add status and error logs to each timeline invocation.
+
+mactimeline.fiwalk.txt: $(TIMELINE_PY) fiwalk.dfxml
+	$(TIMELINE_CMD) fiwalk.dfxml >$@
+
+mactimeline.py360.txt: $(TIMELINE_PY) py360.dfxml
+	$(TIMELINE_CMD) py360.dfxml >$@
+
+mactimeline.uxtaf.txt: $(TIMELINE_PY) uxtaf.dfxml
+	$(TIMELINE_CMD) uxtaf.dfxml >$@
 
 fiwalk_to_py360.diffs.txt: $(IDIFFERENCE_PY) fiwalk.dfxml py360.dfxml
 	$(IDIFFERENCE_CMD) fiwalk.dfxml py360.dfxml >$@
