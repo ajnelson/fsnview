@@ -75,6 +75,7 @@ diffs.uxtaf_to_py360.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 
 fiwalk.dfxml: $(FIWALK) $(IMAGE)
 	echo "In progress..." >fiwalk.status.log
+	rm -f fiwalk.dfxml
 	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo $$? >fiwalk.status.log
 
 py360.dfxml: $(PY360_PYS) $(IMAGE)
