@@ -22,12 +22,12 @@ TIMELINE_CMD=python3 $(TIMELINE_PY)
 FIWALK_MAYBE_ALLOC_ONLY?=
 
 TARGETS = \
-  fiwalk_to_py360.diffs.txt \
-  fiwalk_to_uxtaf.diffs.txt \
-  py360_to_fiwalk.diffs.txt \
-  py360_to_uxtaf.diffs.txt \
-  uxtaf_to_fiwalk.diffs.txt \
-  uxtaf_to_py360.diffs.txt \
+  diffs.fiwalk_to_py360.txt \
+  diffs.fiwalk_to_uxtaf.txt \
+  diffs.py360_to_fiwalk.txt \
+  diffs.py360_to_uxtaf.txt \
+  diffs.uxtaf_to_fiwalk.txt \
+  diffs.uxtaf_to_py360.txt \
   mactimeline.fiwalk.txt \
   mactimeline.py360.txt \
   mactimeline.uxtaf.txt 
@@ -40,7 +40,7 @@ report: $(TARGETS)
 	@grep '^' *.status.log | cat
 	@echo ""
 	@echo "Review these files for between-tool differences:"
-	@ls *.diffs.txt
+	@ls diffs*.txt
 	@echo ""
 	@echo "Review these files for file system timelines according to each tool:"
 	@ls mactimeline*.txt
@@ -55,22 +55,22 @@ mactimeline.py360.txt: $(TIMELINE_PY) py360.dfxml
 mactimeline.uxtaf.txt: $(TIMELINE_PY) uxtaf.dfxml
 	$(TIMELINE_CMD) uxtaf.dfxml >$@
 
-fiwalk_to_py360.diffs.txt: $(IDIFFERENCE_PY) fiwalk.dfxml py360.dfxml
+diffs.fiwalk_to_py360.txt: $(IDIFFERENCE_PY) fiwalk.dfxml py360.dfxml
 	$(IDIFFERENCE_CMD) fiwalk.dfxml py360.dfxml >$@
 
-fiwalk_to_uxtaf.diffs.txt: $(IDIFFERENCE_PY) fiwalk.dfxml uxtaf.dfxml
+diffs.fiwalk_to_uxtaf.txt: $(IDIFFERENCE_PY) fiwalk.dfxml uxtaf.dfxml
 	$(IDIFFERENCE_CMD) fiwalk.dfxml uxtaf.dfxml >$@
 
-py360_to_fiwalk.diffs.txt: $(IDIFFERENCE_PY) py360.dfxml fiwalk.dfxml
+diffs.py360_to_fiwalk.txt: $(IDIFFERENCE_PY) py360.dfxml fiwalk.dfxml
 	$(IDIFFERENCE_CMD) py360.dfxml fiwalk.dfxml >$@
 
-py360_to_uxtaf.diffs.txt: $(IDIFFERENCE_PY) py360.dfxml uxtaf.dfxml
+diffs.py360_to_uxtaf.txt: $(IDIFFERENCE_PY) py360.dfxml uxtaf.dfxml
 	$(IDIFFERENCE_CMD) py360.dfxml uxtaf.dfxml >$@
 
-uxtaf_to_fiwalk.diffs.txt: $(IDIFFERENCE_PY) uxtaf.dfxml fiwalk.dfxml
+diffs.uxtaf_to_fiwalk.txt: $(IDIFFERENCE_PY) uxtaf.dfxml fiwalk.dfxml
 	$(IDIFFERENCE_CMD) uxtaf.dfxml fiwalk.dfxml >$@
 
-uxtaf_to_py360.diffs.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
+diffs.uxtaf_to_py360.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 	$(IDIFFERENCE_CMD) uxtaf.dfxml py360.dfxml >$@
 
 fiwalk.dfxml: $(FIWALK) $(IMAGE)
