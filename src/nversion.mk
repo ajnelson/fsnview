@@ -32,7 +32,7 @@ all: report
 #report: Fake-file rule, should move to calling Bash script
 report: $(TARGETS)
 	@echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
-	@more *.status.log | cat
+	@grep '^' *.status.log | cat
 	@echo ""
 	@echo "Review these files:"
 	@ls *.diffs.txt
@@ -57,12 +57,12 @@ uxtaf_to_py360.diffs.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 
 fiwalk.dfxml: $(FIWALK) $(IMAGE)
 	echo "In progress..." >fiwalk.status.log
-	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo -n $$? >fiwalk.status.log
+	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo $$? >fiwalk.status.log
 
 py360.dfxml: $(PY360_PYS) $(IMAGE)
 	echo "In progress..." >py360.status.log
 	rm -f py360out.dfxml
-	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo -n $$? >py360.status.log
+	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo $$? >py360.status.log
 	#TODO Check exit status here
 	if [ -r py360out.dfxml ]; then \
 	  mv py360out.dfxml py360.dfxml; \
@@ -76,9 +76,9 @@ uxtaf.dfxml: $(UXTAF) $(IMAGE)
 	@rm -f uxtaf.info
 	$(UXTAF) attach $(IMAGE) 5115674624 >uxtaf.out.log 2>uxtaf.err.log; \
 	  rc=$$?; \
-	  echo -n $$rc >uxtaf.status.log; \
+	  echo $$rc >uxtaf.status.log; \
 	  if [ $$rc -ne 0 ]; then \
 	    exit $$rc; \
 	  fi
-	$(UXTAF) dfxml >uxtaf.dfxml 2>>uxtaf.err.log; echo -n $$? >uxtaf.status.log
+	$(UXTAF) dfxml >uxtaf.dfxml 2>>uxtaf.err.log; echo $$? >uxtaf.status.log
 	@rm -f uxtaf.info
