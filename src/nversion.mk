@@ -83,6 +83,7 @@ py360.dfxml: $(PY360_PYS) $(IMAGE)
 uxtaf.dfxml: $(UXTAF) $(IMAGE)
 	echo "In progress..." >uxtaf.status.log
 	@rm -f uxtaf.info
+	#TODO Add a dd | grep to look for XTAF partitions, only scanning the first N megabytes of the disk
 	$(UXTAF) attach $(IMAGE) 5115674624 >uxtaf.out.log 2>uxtaf.err.log; \
 	  rc=$$?; \
 	  echo $$rc >uxtaf.status.log; \
