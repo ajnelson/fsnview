@@ -32,7 +32,7 @@ for part_off in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; d
   if [ $rc -eq 0 ]; then
     cat uxtaf_${part_off}.dfxml >>uxtaf.dfxml
   else
-    echo "    <!-- Error: Unable to create process partition at ${part_off}.  uxtaf exited with status $rc.  See error log at uxtaf_${part_off}.err.log -->" >>uxtaf.dfxml
+    echo "  <!-- Error: Unable to create process partition at ${part_off}.  uxtaf exited with status $rc.  See error log at uxtaf_${part_off}.err.log -->" >>uxtaf.dfxml
   fi
 done
 $UXTAF dfxml_foot >>uxtaf.dfxml 2>>uxtaf.err.log
