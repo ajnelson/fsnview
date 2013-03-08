@@ -15,7 +15,8 @@ PY360_REPORT360_PY?=$(PKGDATADIR)/python2/report360.py
 PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
-UXTAF?=$(PREFIX)/bin/uxtaf
+UXTAF_PROGS=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
+UXTAF_CMD=$(PKGDATADIR)/uxtaf_allparts.sh
 TIMELINE_PY=$(PKGDATADIR)/python3/demo_mac_timeline.py
 TIMELINE_CMD=python3 $(TIMELINE_PY)
 
@@ -80,15 +81,7 @@ py360.dfxml: $(PY360_PYS) $(IMAGE)
 	  exit 5; \
 	fi
 
-uxtaf.dfxml: $(UXTAF) $(IMAGE)
+uxtaf.dfxml: $(UXTAF_PROGS) $(IMAGE)
 	echo "In progress..." >uxtaf.status.log
-	@rm -f uxtaf.info
-	#TODO Add a dd | grep to look for XTAF partitions, only scanning the first N megabytes of the disk
-	$(UXTAF) attach $(IMAGE) 5115674624 >uxtaf.out.log 2>uxtaf.err.log; \
-	  rc=$$?; \
-	  echo $$rc >uxtaf.status.log; \
-	  if [ $$rc -ne 0 ]; then \
-	    exit $$rc; \
-	  fi
-	$(UXTAF) dfxml >uxtaf.dfxml 2>>uxtaf.err.log; echo $$? >uxtaf.status.log
-	@rm -f uxtaf.info
+	$(UXTAF_CMD) $(IMAGE) >uxtaf.out.log 2>uxtaf.err.log \
+	  echo $$? >uxtaf.status.log
