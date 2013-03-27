@@ -9,8 +9,13 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+get_abspath() {
+  python3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+}
+
 imagefile=$1
 imagefilebn=$(basename "$imagefile")
+imagefileap=$(get_abspath "$imagefile")
 outdir="${imagefilebn%.*}"
 
 echo "fsnview: Debug: outdir: $outdir" >&2
@@ -20,12 +25,12 @@ mkdir -p "$outdir"
 pushd "$outdir" >/dev/null
 
 "$pkgdatadir/nversion.mk" \
-  -j \
+  --keep-going \ 
   FIWALK_MAYBE_ALLOC_ONLY="-O" \
   PKGDATADIR="$pkgdatadir" \
   PREFIX="$prefix" \
   PYTHON="$PYTHON" \
-  IMAGE="$imagefile"
+  IMAGE="$imagefileap"
 
 # Run report
 echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
