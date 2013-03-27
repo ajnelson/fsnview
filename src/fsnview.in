@@ -20,6 +20,7 @@ mkdir -p "$outdir"
 pushd "$outdir" >/dev/null
 
 "$pkgdatadir/nversion.mk" \
+  -j \
   FIWALK_MAYBE_ALLOC_ONLY="-O" \
   PKGDATADIR="$pkgdatadir" \
   PREFIX="$prefix" \
