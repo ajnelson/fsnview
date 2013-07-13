@@ -1,4 +1,3 @@
-#!/usr/bin/make -f
 
 #Usage: ./nversion.mk IMAGE=full_path_to_image_file
 

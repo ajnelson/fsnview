@@ -4,8 +4,28 @@ prefix=@prefix@
 pkgdatadir=@datarootdir@/@PACKAGE@
 PYTHON=@PYTHON@
 
+usage="Usage: $0 [options] disk_image\n"
+usage=$usage"\n"
+usage=$usage"Options:\n"
+usage=$usage"\t-d\n"
+usage=$usage"\t  Enable debug printing\n"
+
+debug=0
+
+while [ $# -ge 1 ]; do
+  case $1 in
+    -d )
+      debug=1
+      ;;
+    * )
+      break
+      ;;
+  esac
+  shift
+done
+
 if [ $# -lt 1 ]; then
-  echo "Usage: $0 disk_image" >&2
+  printf "$usage" >&2
   exit 1
 fi
 
@@ -13,19 +33,27 @@ get_abspath() {
   python3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
+test $debug -eq 1 && set -x
+
 imagefile=$1
 imagefilebn=$(basename "$imagefile")
 imagefileap=$(get_abspath "$imagefile")
-outdir="${imagefilebn%.*}"
+outdir=$(get_abspath "${imagefilebn%.*}")
 
-echo "fsnview: Debug: outdir: $outdir" >&2
+if [ $debug -eq 1 ]; then
+  echo "fsnview: Debug: \$outdir: $outdir" >&2
+  echo "fsnview: Debug: \$imagefileap: $imagefileap" >&2
+  echo "fsnview: Debug: \$pkgdatadir: $pkgdatadir" >&2
+fi
 
-echo "fsnview: Debug: Descending into output directory \"$outdir\"" >&2
 mkdir -p "$outdir"
+test $debug -eq 1 && echo "fsnview: Debug: Descending into output directory \"$outdir\"" >&2
 pushd "$outdir" >/dev/null
 
-"$pkgdatadir/nversion.mk" \
-  --keep-going \ 
+make \
+  --directory="$outdir" \
+  --makefile="$pkgdatadir/nversion.mk" \
+  --keep-going \
   FIWALK_MAYBE_ALLOC_ONLY="-O" \
   PKGDATADIR="$pkgdatadir" \
   PREFIX="$prefix" \
