@@ -6,7 +6,7 @@
 	url = https://github.com/ajnelson/sleuthkit.git
 [submodule "deps/uxtaf"]
 	path = deps/uxtaf
-	url = git@bitbucket.org:ssrc/uxtaf.git
+	url = https://github.com/ajnelson/uxtaf.git
 [submodule "deps/dfxml"]
 	path = deps/dfxml
 	url = https://github.com/ajnelson/dfxml.git
