@@ -8,4 +8,6 @@ if [ ! -r deps/dfxml/python/dfxml.py ]; then
   git submodule update
 fi
 
+aclocal
+automake --add-missing
 autoreconf -i
