@@ -13,6 +13,7 @@ if [ -r /etc/debian_version ]; then
     libtool \
     make \
     python-crypto \
+    python-fuse \
     zlib1g-dev
 fi
 #TODO

@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.59])
 AC_INIT(fsnview, 0.0.0, ajnelson@cs.ucsc.edu)
 AC_CONFIG_SRCDIR([src/fsnview.in])
 AM_INIT_AUTOMAKE
