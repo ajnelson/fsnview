@@ -50,6 +50,7 @@ mkdir -p "$outdir"
 test $debug -eq 1 && echo "fsnview: Debug: Descending into output directory \"$outdir\"" >&2
 pushd "$outdir" >/dev/null
 
+# Analyze disk image
 make \
   --directory="$outdir" \
   --makefile="$pkgdatadir/nversion.mk" \
@@ -60,14 +61,46 @@ make \
   PYTHON="$PYTHON" \
   IMAGE="$imagefileap"
 
-# Run report
+# Run reports
+debug_flag=
+if [ $debug -eq 1 ]; then
+  debug_flag="-d"
+fi
+PYTHON3 "$pkgdatadir/python3/make_diff_stats.py" $debug_flag . 2>&1 | tee make_diff_stats.py.log
+echo $? >make_diff_stats.py.status.log
+PYTHON3 "$pkgdatadir/python3/make_summary_stats.py" $debug_flag . 2>&1 | tee make_summary_stats.py.log
+echo $? >make_summary_stats.py.status.log
+
+
+# Output file summary
+echo ""
+echo "Results"
+echo "======="
+echo ""
+echo "Results directory:"
+echo ""
+echo "$outdir"
+echo ""
+echo ""
 echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
-grep '^' *.status.log | cat
+echo ""
+grep '^' {fiwalk,py360,uxtaf}*.status.log | cat
+echo ""
 echo ""
 echo "Review these files for between-tool differences:"
+echo ""
 ls diffs*.txt
 echo ""
+echo ""
 echo "Review these files for file system timelines according to each tool:"
+echo ""
 ls mactimeline*.txt
+echo ""
+echo ""
+echo "Review these files for tabulated results:"
+echo ""
+ls {diffs,summary}.{tex,html}
+echo ""
+echo ""
 
 popd >/dev/null
