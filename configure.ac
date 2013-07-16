@@ -13,6 +13,10 @@ AC_PROG_MAKE_SET
 
 dnl Search for Python 2.7.3, which catches the MacPorts version in OS X.  Linuxes should be on 2.7.3 as well.
 AM_PATH_PYTHON(2.7.3)
+AC_CHECK_PROGS(PYTHON3, [python3.3 python3.2 python3.1 python3])
+if test "x$PYTHON3" == "x"; then
+  AC_MSG_ERROR([Python 3 not found.])
+fi
 
 # Checks for Python modules: Crypto
 AX_PYTHON_MODULE(Crypto)
