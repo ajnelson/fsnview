@@ -12,6 +12,7 @@ if [ -r /etc/debian_version ]; then
     libssl-dev \
     libtool \
     make \
+    python3 \
     python-crypto \
     python-fuse \
     zlib1g-dev
@@ -22,7 +23,3 @@ fi
 #    libafflib-dev \
 #    libewf-dev \
 #    libexpat1-dev \
-#    libxml2-dev \
-#    libxml2-utils \
-#    python3 \
-#    python-dev \
