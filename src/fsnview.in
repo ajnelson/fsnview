@@ -3,6 +3,7 @@
 prefix=@prefix@
 pkgdatadir=@datarootdir@/@PACKAGE@
 PYTHON=@PYTHON@
+PYTHON3=@PYTHON3@
 
 usage="Usage: $0 [options] disk_image\n"
 usage=$usage"\n"
@@ -66,9 +67,9 @@ debug_flag=
 if [ $debug -eq 1 ]; then
   debug_flag="-d"
 fi
-PYTHON3 "$pkgdatadir/python3/make_diff_stats.py" $debug_flag . 2>&1 | tee make_diff_stats.py.log
+$PYTHON3 "$pkgdatadir/python3/make_diff_stats.py" $debug_flag . 2>&1 | tee make_diff_stats.py.log
 echo $? >make_diff_stats.py.status.log
-PYTHON3 "$pkgdatadir/python3/make_summary_stats.py" $debug_flag . 2>&1 | tee make_summary_stats.py.log
+$PYTHON3 "$pkgdatadir/python3/make_summary_stats.py" $debug_flag . 2>&1 | tee make_summary_stats.py.log
 echo $? >make_summary_stats.py.status.log
 
 

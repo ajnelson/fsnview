@@ -15,7 +15,7 @@ PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
 PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
 PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
 UXTAF_PROGS=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
-UXTAF_CMD=$(PKGDATADIR)/uxtaf_allparts.sh
+UXTAF_CMD=UXTAF=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
 TIMELINE_PY=$(PKGDATADIR)/python3/demo_mac_timeline.py
 TIMELINE_CMD=python3 $(TIMELINE_PY)
 
