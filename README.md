@@ -7,6 +7,11 @@ Usage: `fsnview disk_image`
 Currently this utility compares an XTAF storage system with multiple tools.
 
 
+## Building and installing
+
+See INSTALL.
+
+
 ## Results
 
 By default, a directory is created in the current working directory, named after the extensionless disk image name.  For example, the command `fsnview /bigstorage/DISKIMAGE.iso` creates the directory `./DISKIMAGE`.
