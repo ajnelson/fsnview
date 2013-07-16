@@ -10,7 +10,7 @@ if [ "x$UXTAF" == "x" ]; then
   UXTAF=uxtaf
 fi
 
-IMAGE=$1
+IMAGE="$1"
 
 rm -f uxtaf.info
 
@@ -21,10 +21,10 @@ rm -f uxtaf.info
 #	If dfxml succeeded, append uxtaf_$offset.dfxml to uxtaf.dfxml;
 #	Else if failed, append comment with exit status to uxtaf.dfxml.
 #Generate foot, appending to uxtaf.dfxml.
-$UXTAF dfxml_head $IMAGE >uxtaf.dfxml 2>>uxtaf.err.log
+$UXTAF dfxml_head "$IMAGE" >uxtaf.dfxml 2>>uxtaf.err.log
 
 for part_off in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
-  $UXTAF attach $IMAGE ${part_off} >uxtaf_${part_off}.out.log 2>uxtaf_${part_off}.err.log && \
+  $UXTAF attach "$IMAGE" ${part_off} >uxtaf_${part_off}.out.log 2>uxtaf_${part_off}.err.log && \
     $UXTAF dfxml >uxtaf_${part_off}.dfxml 2>>uxtaf_${part_off}.err.log
   rc=$?
   echo $rc >uxtaf_${part_off}.status.log

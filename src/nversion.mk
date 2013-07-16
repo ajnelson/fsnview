@@ -1,14 +1,19 @@
 
 #Usage: ./nversion.mk IMAGE=full_path_to_image_file
 
+ifndef IMAGE
+$(error IMAGE must be defined.)
+endif
+
 #This really should be over-ridden.
 PREFIX?=/usr/local
 PYTHON?=$(shell which python)
+PYTHON3?=$(shell which python3)
 PACKAGE?=fsnview
 PKGDATADIR?=$(PREFIX)/share/$(PACKAGE)
 
 IDIFFERENCE_PY=$(PKGDATADIR)/python3/idifference.py
-IDIFFERENCE_CMD=python3 $(IDIFFERENCE_PY) --summary
+IDIFFERENCE_CMD=$(PYTHON3) $(IDIFFERENCE_PY) --summary
 FIWALK?=$(PREFIX)/bin/fiwalk
 PY360_REPORT360_PY?=$(PKGDATADIR)/python2/report360.py
 PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
@@ -17,7 +22,7 @@ PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
 UXTAF_PROGS=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
 UXTAF_CMD=UXTAF=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
 TIMELINE_PY=$(PKGDATADIR)/python3/demo_mac_timeline.py
-TIMELINE_CMD=python3 $(TIMELINE_PY)
+TIMELINE_CMD=$(PYTHON3) $(TIMELINE_PY)
 
 FIWALK_MAYBE_ALLOC_ONLY?=
 
@@ -63,15 +68,15 @@ diffs.uxtaf_to_fiwalk.txt: $(IDIFFERENCE_PY) uxtaf.dfxml fiwalk.dfxml
 diffs.uxtaf_to_py360.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 	$(IDIFFERENCE_CMD) uxtaf.dfxml py360.dfxml >$@
 
-fiwalk.dfxml: $(FIWALK) $(IMAGE)
+fiwalk.dfxml: $(FIWALK)
 	echo "In progress..." >fiwalk.status.log
 	rm -f fiwalk.dfxml
-	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml $(IMAGE) >fiwalk.out.log 2>fiwalk.err.log; echo $$? >fiwalk.status.log
+	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml "$(IMAGE)" >fiwalk.out.log 2>fiwalk.err.log; echo $$? >fiwalk.status.log
 
-py360.dfxml: $(PY360_PYS) $(IMAGE)
+py360.dfxml: $(PY360_PYS)
 	echo "In progress..." >py360.status.log
 	rm -f py360out.dfxml
-	$(PY360_CMD) $(IMAGE) >py360.out.log 2>py360.err.log; echo $$? >py360.status.log
+	$(PY360_CMD) "$(IMAGE)" >py360.out.log 2>py360.err.log; echo $$? >py360.status.log
 	#TODO Check exit status here
 	if [ -r py360out.dfxml ]; then \
 	  mv py360out.dfxml py360.dfxml; \
@@ -80,7 +85,7 @@ py360.dfxml: $(PY360_PYS) $(IMAGE)
 	  exit 5; \
 	fi
 
-uxtaf.dfxml: $(UXTAF_PROGS) $(IMAGE)
+uxtaf.dfxml: $(UXTAF_PROGS)
 	echo "In progress..." >uxtaf.status.log
-	$(UXTAF_CMD) $(IMAGE) >uxtaf.out.log 2>uxtaf.err.log \
+	$(UXTAF_CMD) "$(IMAGE)" >uxtaf.out.log 2>uxtaf.err.log \
 	  echo $$? >uxtaf.status.log

@@ -31,15 +31,15 @@ if [ $# -lt 1 ]; then
 fi
 
 get_abspath() {
-  python3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+  $PYTHON3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
 test $debug -eq 1 && set -x
 
-imagefile=$1
-imagefilebn=$(basename "$imagefile")
-imagefileap=$(get_abspath "$imagefile")
-outdir=$(get_abspath "${imagefilebn%.*}")
+imagefile="$1"
+imagefilebn="$(basename "$imagefile")"
+imagefileap="$(get_abspath "$imagefile")"
+outdir="$(get_abspath "${imagefilebn%.*}")"
 
 if [ $debug -eq 1 ]; then
   echo "fsnview: Debug: \$outdir: $outdir" >&2
@@ -60,6 +60,7 @@ make \
   PKGDATADIR="$pkgdatadir" \
   PREFIX="$prefix" \
   PYTHON="$PYTHON" \
+  PYTHON3="$PYTHON3" \
   IMAGE="$imagefileap"
 
 # Run reports
