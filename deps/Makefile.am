@@ -1,3 +1,5 @@
+SUBDIRS = sleuthkit uxtaf
+
 fsnpydir = ${pkgdatadir}/python2
 fsnpysubdir = ${pkgdatadir}/python2/py360
 

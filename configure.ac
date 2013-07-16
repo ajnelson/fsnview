@@ -7,6 +7,7 @@ AC_CONFIG_SRCDIR([src/fsnview.in])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
+AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
@@ -39,4 +40,6 @@ AC_CONFIG_FILES([Makefile
                  deps/Makefile
                  src/fsnview
                  src/Makefile])
+AC_CONFIG_SUBDIRS([deps/sleuthkit
+                   deps/uxtaf])
 AC_OUTPUT
