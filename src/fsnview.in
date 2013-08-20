@@ -5,18 +5,70 @@ pkgdatadir=@datarootdir@/@PACKAGE@
 PYTHON=@PYTHON@
 PYTHON3=@PYTHON3@
 
-usage="Usage: $0 [options] disk_image\n"
+usage="Usage: $0 [options] command [options] [parameters]\n"
 usage=$usage"\n"
-usage=$usage"Options:\n"
-usage=$usage"\t-d\n"
+usage=$usage"Commands:\n"
+usage=$usage"\n"
+usage=$usage"\txbox360 disk_image [output_directory]\n"
+usage=$usage"\t  Run all the below commands for an Xbox 360 disk image.  No options needed.\n"
+usage=$usage"\tparse [options] disk_image [output_directory]\n"
+usage=$usage"\t  Run parsers, requested with options, on the disk image.\n"
+usage=$usage"\ttabulate [options] output_directory\n"
+usage=$usage"\t  Compare DFXML supplied as options.  For example, to include Fiwalk output in the comparison pool, pass '--fiwalk=fiout.dfxml'.\n"
+usage=$usage"\treport output_directory\n"
+usage=$usage"\t  View processing statistics of an output directory.\n"
+usage=$usage"\n"
+usage=$usage"For commands where the output directory is optional, the default is created in the current directory, based on the image file's name.\n"
+usage=$usage"\n"
+usage=$usage"General options:\n"
+usage=$usage"\n"
+usage=$usage"\t-c cfg, --config=cfg\n"
+usage=$usage"\t  Use this configuration file (specifies labelling in reports)\n"
+usage=$usage"\t-d, --debug\n"
 usage=$usage"\t  Enable debug printing\n"
+usage=$usage"\t-h, --help\n"
+usage=$usage"\t  Print this help menu and exit.\n"
+usage=$usage"\n"
+usage=$usage"Parsers:\n"
+usage=$usage"\n"
+usage=$usage"These storage system parsers can be passed as options to the 'parse' and 'tabulate' commands.\n"
+usage=$usage"\n"
+usage=$usage"--fiwalk\n"
+usage=$usage"--py360\n"
+usage=$usage"--uxtaf\n"
+#usage=$usage"--dfxml_tool\n" #(Soon...)
+usage=$usage"\n"
 
+get_abspath() {
+  $PYTHON3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+}
+
+config_file="$pkgdatadir/fsnview.cfg.sample"
 debug=0
+do_command_xbox360=0
+do_command_parse=0
+do_command_tabulate=0
+do_command_report=0
 
+#TODO Add GNU getopt
+
+#Parse options
 while [ $# -ge 1 ]; do
   case $1 in
-    -d )
+    -c | --config )
+      config_file="$2"
+      if [ ! -r "$config_file" ]; then
+        echo "Error: fsnview: Argument passed to $1 is not a readable file: '$2'." >&2
+        exit 1
+      fi
+      shift
+      ;;
+    -d | --debug )
       debug=1
+      ;;
+    -h | --help )
+      printf "$usage"
+      exit 0
       ;;
     * )
       break
@@ -30,11 +82,62 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-get_abspath() {
-  $PYTHON3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
-}
-
 test $debug -eq 1 && set -x
+
+#Parse commands and their options
+declare -a argc_parse
+declare -a argc_tabulate
+declare -a argc_report
+case $1 in
+  xbox360 )
+      do_command_xbox360=1
+      do_command_parse=1
+      do_command_tabulate=1
+      do_command_report=1
+    ;;
+  parse )
+      do_command_parse=1
+    ;;
+  tabulate )
+      do_command_tabulate=1
+    ;;
+  report )
+      do_command_report=1
+    ;;
+  * )
+    echo "Error: fsnview: command not recognized: '$1'." >&2
+    exit 1
+    ;;
+esac
+shift
+
+if [ $do_command_parse -eq 1]; then
+declare -a target_dfxml
+target_dfxml_tally=0 #TODO Look up Bash array length syntax
+while [ $# -ge 1 ]; do
+  case $1 in
+    --fiwalk )
+        target_dfxml[$target_dfxml_tally]=fiwalk.dfxml
+        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
+      ;;
+    --py360 )
+        target_dfxml[$target_dfxml_tally]=py360.dfxml
+        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
+      ;;
+    --uxtaf )
+        target_dfxml[$target_dfxml_tally]=uxtaf.dfxml
+        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
+      ;;
+    * )
+      break
+      ;;
+  esac
+  shift
+done
+if [ $target_dfxml_tally -lt 1 ]; then
+  echo "Error: You must request at least one target DFXML file with an optional parameter.  (Else, this program does nothing.)" >&2
+  exit 1
+fi
 
 imagefile="$1"
 imagefilebn="$(basename "$imagefile")"
@@ -61,48 +164,24 @@ make \
   PREFIX="$prefix" \
   PYTHON="$PYTHON" \
   PYTHON3="$PYTHON3" \
-  IMAGE="$imagefileap"
+  IMAGE="$imagefileap" \
+  "${target_dfxml[*]}"
+
+popd >/dev/null
+fi #do_command_parse
+
+if [ $do_command_report -eq 1 ]; then
+  "$pkgdatadir/report.sh" "$@"
+fi #do_command_report
+
+echo "Error: Lines below not implemented." >&2
+exit 1
+#TODO
 
 # Run reports
 debug_flag=
 if [ $debug -eq 1 ]; then
   debug_flag="-d"
 fi
-$PYTHON3 "$pkgdatadir/python3/make_diff_stats.py" $debug_flag . 2>&1 | tee make_diff_stats.py.log
-echo $? >make_diff_stats.py.status.log
-$PYTHON3 "$pkgdatadir/python3/make_summary_stats.py" $debug_flag . 2>&1 | tee make_summary_stats.py.log
-echo $? >make_summary_stats.py.status.log
+"$pkgdatadir/tabulate.sh" $debug_flag .
 
-
-# Output file summary
-echo ""
-echo "Results"
-echo "======="
-echo ""
-echo "Results directory:"
-echo ""
-echo "$outdir"
-echo ""
-echo ""
-echo "Exit statuses of all the DFXML-generating programs (should be 0's):"
-echo ""
-grep '^' {fiwalk,py360,uxtaf}*.status.log | cat
-echo ""
-echo ""
-echo "Review these files for between-tool differences:"
-echo ""
-ls diffs*.txt
-echo ""
-echo ""
-echo "Review these files for file system timelines according to each tool:"
-echo ""
-ls mactimeline*.txt
-echo ""
-echo ""
-echo "Review these files for tabulated results:"
-echo ""
-ls {diffs,summary}.{tex,html}
-echo ""
-echo ""
-
-popd >/dev/null
