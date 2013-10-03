@@ -43,6 +43,7 @@ AX_PYTHON_MODULE(fuse)
 AC_CONFIG_FILES([Makefile
                  deps/Makefile
                  etc/Makefile
+                 src/compare.sh
                  src/fsnview
                  src/Makefile])
 AC_CONFIG_SUBDIRS([deps/sleuthkit
