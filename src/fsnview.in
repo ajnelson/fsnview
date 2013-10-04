@@ -183,5 +183,6 @@ debug_flag=
 if [ $debug -eq 1 ]; then
   debug_flag="-d"
 fi
-"$pkgdatadir/tabulate.sh" $debug_flag .
+"$pkgdatadir/compare.sh" $debug_flag .
+"$pkgdatadir/report.sh" $debug_flag .
 

@@ -11,6 +11,7 @@ if [ "x$UXTAF" == "x" ]; then
 fi
 
 IMAGE="$1"
+OUTPUT="$2"
 
 rm -f uxtaf.info
 
@@ -24,10 +25,19 @@ rm -f uxtaf.info
 $UXTAF dfxml_head "$IMAGE" >uxtaf.dfxml 2>>uxtaf.err.log
 
 for part_off in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
-  $UXTAF attach "$IMAGE" ${part_off} >uxtaf_${part_off}.out.log 2>uxtaf_${part_off}.err.log && \
+  errlog="uxtaf_${part_off}.err.log"
+  $UXTAF attach "$IMAGE" ${part_off} >uxtaf_${part_off}.out.log 2>$errlog && \
     $UXTAF dfxml >uxtaf_${part_off}.dfxml 2>>uxtaf_${part_off}.err.log
   rc=$?
   echo $rc >uxtaf_${part_off}.status.log
+
+  #Emit the stderrs so all the errors are in the same place
+  if [ -s $errlog ]; then
+    echo >&2
+    echo "${0}: Note: From $errlog:" >&2
+    cat $errlog >&2
+    echo >&2
+  fi
 
   if [ $rc -eq 0 ]; then
     cat uxtaf_${part_off}.dfxml >>uxtaf.dfxml

@@ -32,7 +32,7 @@ def main():
         slog_fn = filename
         elog_fn = filename.replace(".status.log", ".err.log")
         rc = None
-        with open(os.path.join(dirpath, slog_fn)) as slog_fh:
+        with open(os.path.join(dirpath, slog_fn), "r") as slog_fh:
             rc_txt = slog_fh.read(10).strip()
             if rc_txt != "":
                 rc = int(rc_txt)
@@ -94,7 +94,13 @@ def main():
         print("""\
       <dt>%s</dt><dd>%s</dd>""" % (ab, abbreviations[ab]))
     print("""\
-      </dl>
+      </dl>""")
+
+    with open("differences/diffs.html", "r") as diffs_table_fh:
+        for line in diffs_table_fh:
+            print(line)
+
+    print("""\
     </section>""")
 
     if len(validation_status.keys()) > 0:
@@ -126,6 +132,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--debug", action="store_true")
+    parser.add_argument("results_directory", help="Directory containing the results of the rest of FSNView's operations.  See README for description of expected hierarchy.")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)

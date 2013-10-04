@@ -1,9 +1,12 @@
 #!/bin/bash
 
+PYTHON3="@PYTHON3@"
+pkgdatadir="@pkgdatadir@"
+
 usage="Usage: $0 fsnview_output_directory\n"
 
 get_abspath() {
-  $PYTHON3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
 outdir="$1"
@@ -15,6 +18,9 @@ fi
 
 pushd "$outdir" >/dev/null
 
+"$PYTHON3" "${pkgdatadir}/python3/report.py" "$outdir"
+
+#TODO Whittle this Bash report, importing into Python version
 # Output file summary
 echo ""
 echo "Results"

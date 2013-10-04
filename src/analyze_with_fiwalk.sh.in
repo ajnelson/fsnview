@@ -1,0 +1,9 @@
+#!/bin/bash
+
+prefix="@prefix@"
+FIWALK="${prefix}/bin/fiwalk"
+
+disk_image="$1"
+output_dir="$2"
+
+"$FIWALK" -O -G0 -X fiwalk.dfxml "$1"

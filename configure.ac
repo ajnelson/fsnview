@@ -43,9 +43,13 @@ AX_PYTHON_MODULE(fuse)
 AC_CONFIG_FILES([Makefile
                  deps/Makefile
                  etc/Makefile
+                 src/Makefile
+                 src/analyze.sh
+                 src/analyze_with_fiwalk.sh
+                 src/analyze_with_py360.sh
                  src/compare.sh
                  src/fsnview
-                 src/Makefile])
+                 src/report.sh])
 AC_CONFIG_SUBDIRS([deps/sleuthkit
                    deps/uxtaf])
 AC_OUTPUT

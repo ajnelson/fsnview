@@ -14,17 +14,11 @@ PKGDATADIR?=$(PREFIX)/share/$(PACKAGE)
 
 IDIFFERENCE_PY=$(PKGDATADIR)/python3/idifference.py
 IDIFFERENCE_CMD=$(PYTHON3) $(IDIFFERENCE_PY) --summary
-FIWALK?=$(PREFIX)/bin/fiwalk
-PY360_REPORT360_PY?=$(PKGDATADIR)/python2/report360.py
-PY360_PARTITION360_PY=$(PKGDATADIR)/python2/py360/partition.py
-PY360_PYS=$(PY360_PARTITION_PY) $(PY360_REPORT360_PY)
-PY360_CMD=$(PYTHON) $(PY360_REPORT360_PY) -x
 UXTAF_PROGS=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
-UXTAF_CMD=UXTAF=$(PREFIX)/bin/uxtaf $(PKGDATADIR)/uxtaf_allparts.sh
+UXTAF_CMD=UXTAF=$(PKGDATADIR)/uxtaf_allparts.sh
 TIMELINE_PY=$(PKGDATADIR)/python3/demo_mac_timeline.py
 TIMELINE_CMD=$(PYTHON3) $(TIMELINE_PY)
 
-FIWALK_MAYBE_ALLOC_ONLY?=
 
 TARGETS = \
   diffs.fiwalk_to_py360.txt \
@@ -32,10 +26,7 @@ TARGETS = \
   diffs.py360_to_fiwalk.txt \
   diffs.py360_to_uxtaf.txt \
   diffs.uxtaf_to_fiwalk.txt \
-  diffs.uxtaf_to_py360.txt \
-  mactimeline.fiwalk.txt \
-  mactimeline.py360.txt \
-  mactimeline.uxtaf.txt 
+  diffs.uxtaf_to_py360.txt
 
 all: $(TARGETS)
 
@@ -67,11 +58,6 @@ diffs.uxtaf_to_fiwalk.txt: $(IDIFFERENCE_PY) uxtaf.dfxml fiwalk.dfxml
 
 diffs.uxtaf_to_py360.txt: $(IDIFFERENCE_PY) uxtaf.dfxml py360.dfxml
 	$(IDIFFERENCE_CMD) uxtaf.dfxml py360.dfxml >$@
-
-fiwalk.dfxml: $(FIWALK)
-	echo "In progress..." >fiwalk.status.log
-	rm -f fiwalk.dfxml
-	$(FIWALK) $(FIWALK_MAYBE_ALLOC_ONLY) -Xfiwalk.dfxml "$(IMAGE)" >fiwalk.out.log 2>fiwalk.err.log; echo $$? >fiwalk.status.log
 
 py360.dfxml: $(PY360_PYS)
 	echo "In progress..." >py360.status.log
