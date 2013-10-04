@@ -1,14 +1,12 @@
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
-  echo Usage: $0 image_path
+  echo Usage: $0 image_path output_directory
   exit 1
 fi
 
-#Allow environment-specified uxtaf path
-if [ "x$UXTAF" == "x" ]; then
-  UXTAF=uxtaf
-fi
+prefix="@prefix@"
+UXTAF="${prefix}/bin/uxtaf"
 
 IMAGE="$1"
 OUTPUT="$2"

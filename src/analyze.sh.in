@@ -1,7 +1,15 @@
 #!/bin/bash
 
+prefix="@prefix@"
+pkgdatadir="@datarootdir@/@PACKAGE@"
+
 disk_image="$1"
 output_root="$2"
+
+if [ ! -r "$disk_image" ]; then
+  echo "$0: Error: Disk image file not readable." >&2
+  exit 2
+fi
 
 do_xtaf=0
 

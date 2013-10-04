@@ -48,6 +48,7 @@ AC_CONFIG_FILES([Makefile
                  src/analyze.sh
                  src/analyze_with_fiwalk.sh
                  src/analyze_with_py360.sh
+                 src/analyze_with_uxtaf.sh
                  src/compare.sh
                  src/fsnview
                  src/report.sh])
