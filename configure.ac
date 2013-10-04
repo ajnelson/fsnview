@@ -21,17 +21,17 @@ fi
 
 # Checks for Python modules: Crypto
 AX_PYTHON_MODULE(Crypto)
-#if test "$HAVE_PYMOD_CRYPTO" != "yes"; then
+if test "$HAVE_PYMOD_CRYPTO" != "yes"; then
   # The user should supply the target Python binary.
   # Refs:
   # * http://lists.gnu.org/archive/html/bug-automake/2011-01/msg00108.html
   # * via: http://stackoverflow.com/questions/4619664/autofoo-test-for-maximum-version-of-python#comment5396323_4824135
-#  AC_MSG_ERROR([Could not find Python module "Crypto", which should have been installed by the "deps/install_dependent_package-....sh" script for your operating system.  If you have not run that script, please do so; if you have, pass as an environment variable the Python *2* (not 3) binary with which Crypto is affiliated. For example, in OS X: PYTHON=/opt/local/bin/python2.7 ./configure ...])
-#fi
+  AC_MSG_ERROR([Could not find Python module "Crypto", which should have been installed by the "deps/install_dependent_package-....sh" script for your operating system.  If you have not run that script, please do so; if you have, pass as an environment variable the Python *2* (not 3) binary with which Crypto is affiliated. For example, in OS X: PYTHON=/opt/local/bin/python2.7 ./configure ...])
+fi
 AX_PYTHON_MODULE(fuse)
-#if test "$HAVE_PYMOD_FUSE" != "yes"; then
-#  AC_MSG_ERROR([Could not find Python module "fuse", which should have been installed by the "deps/install_dependent_package-....sh" script for your operating system.  If you have not run that script, please do so; if you have, pass as an environment variable the Python *2* (not 3) binary with which fuse is affiliated. For example, in OS X: PYTHON=/opt/local/bin/python2.7 ./configure ...])
-#fi
+if test "$HAVE_PYMOD_FUSE" != "yes"; then
+  AC_MSG_ERROR([Could not find Python module "fuse", which should have been installed by the "deps/install_dependent_package-....sh" script for your operating system.  If you have not run that script, please do so; if you have, pass as an environment variable the Python *2* (not 3) binary with which fuse is affiliated. For example, in OS X: PYTHON=/opt/local/bin/python2.7 ./configure ...])
+fi
 
 # Checks for libraries.
 
@@ -51,6 +51,7 @@ AC_CONFIG_FILES([Makefile
                  src/analyze_with_uxtaf.sh
                  src/compare.sh
                  src/fsnview
+                 src/log_and_run_script.sh
                  src/report.sh])
 AC_CONFIG_SUBDIRS([deps/sleuthkit
                    deps/uxtaf])

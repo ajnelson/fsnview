@@ -20,11 +20,15 @@ Makefile
 /fsnview-*.tar.gz
 /py-compile
 
+# Python
+src/__pycache__
+
 # fsnview-generated files
-/src/fsnview
 /src/analyze.sh
 /src/analyze_with_fiwalk.sh
 /src/analyze_with_py360.sh
 /src/analyze_with_uxtaf.sh
 /src/compare.sh
+/src/fsnview
+/src/log_and_run_script.sh
 /src/report.sh

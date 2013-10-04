@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#This script does the following:
+# * Creates as an output directory $3
+# * Descends into the output directory
+# * Executes $1 on $2, logging stdout and stderr to $3.{out,err}.log
+# * Logs exit status of executing $1 to $3.status.log
+# * Exits with the logged status
+
+PYTHON3="@PYTHON3@"
+
+get_abspath() {
+  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"             
+}                                                                                                       
+
+#Input
+script="$1"
+disk_image="$2"
+rel_outdir="$3"
+abs_outdir="$(get_abspath "$rel_outdir")"
+
+#Output setup
+mkdir -p "$abs_outdir"
+cd "$abs_outdir"
+
+#Execution and logging
+"$script" "$disk_image" "$abs_outdir" >"${abs_outdir}.out.log" 2>"${abs_outdir}.err.log"
+rc=$?
+echo $rc >"${abs_outdir}.status.log"
+
+exit $rc
