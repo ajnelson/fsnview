@@ -10,7 +10,7 @@
 PYTHON3="@PYTHON3@"
 
 get_abspath() {
-  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"             
+  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }                                                                                                       
 
 #Input

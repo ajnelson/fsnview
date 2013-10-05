@@ -1,10 +1,17 @@
 #!/bin/bash
 
+PYTHON3="@PYTHON3@"
 prefix="@prefix@"
 pkgdatadir="@datarootdir@/@PACKAGE@"
 
+get_abspath() {
+  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+}                                                                                                       
 disk_image="$1"
-output_root="$2"
+output_root="$(get_abspath "$2")"
+
+mkdir -p "$output_root"
+pushd "$output_root"
 
 if [ ! -r "$disk_image" ]; then
   echo "$0: Error: Disk image file not readable." >&2
@@ -18,20 +25,22 @@ if [ true ]; then
 fi
 
 #Execute analysis scripts idempotently when possible
+if [ true ]; then
+  if [ ! -r "${output_root}/dfxml/analyze_with_fiwalk.sh.done.log" ]; then
+    rm -rf "${output_root}/dfxml/analyze_with_fiwalk.sh*"
+    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_fiwalk.sh" "$disk_image" "${output_root}/dfxml/analyze_with_fiwalk.sh"
+    if [ $? -eq 0 ]; then
+      date >"${output_root}/dfxml/analyze_with_fiwalk.sh.done.log"
+    fi
+  fi
+fi
+
 if [ $do_xtaf -eq 1 ]; then
   if [ ! -r "${output_root}/dfxml/analyze_with_uxtaf.sh.done.log" ]; then
     rm -rf "${output_root}/dfxml/analyze_with_uxtaf.sh*"
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_uxtaf.sh" "$disk_image" "${output_root}/dfxml/analyze_with_uxtaf.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_uxtaf.sh.done.log"
-    fi
-  fi
-
-  if [ ! -r "${output_root}/dfxml/analyze_with_fiwalk.sh.done.log" ]; then
-    rm -rf "${output_root}/dfxml/analyze_with_fiwalk.sh*"
-    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_fiwalk.sh" "$disk_image" "${output_root}/dfxml/analyze_with_fiwalk.sh"
-    if [ $? -eq 0 ]; then
-      date >"${output_root}/dfxml/analyze_with_fiwalk.sh.done.log"
     fi
   fi
 
@@ -43,3 +52,11 @@ if [ $do_xtaf -eq 1 ]; then
     fi
   fi
 fi
+
+set -e
+rm -f diffs.html
+rm -rf differences
+"$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" .
+${pkgdatadir}/report.sh "$output_root"
+
+popd

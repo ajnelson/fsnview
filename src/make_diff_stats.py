@@ -21,10 +21,19 @@ if __name__ == "__main__":
     log = logging.getLogger()
     log.setLevel(logging.DEBUG if opts.debug else logging.INFO)
 
-    out_latex = open("diffs.tex", "w")
-    out_html = open("diffs.html", "w")
+    image_output_dir = os.path.abspath(os.path.expanduser(opts.xmldir))
+
+    os.makedirs(os.path.join(image_output_dir, "differences"))
+    out_latex = open(os.path.join(image_output_dir, "differences/diffs.tex"), "w")
+    out_html = open(os.path.join(image_output_dir, "differences/diffs.html"), "w")
 
     diff_stats = collections.defaultdict(lambda: 0)
+
+    #DFXML paths
+    dps = dict()
+    dps["fiwalk"] = image_output_dir + "/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml"
+    dps["py360"]  = image_output_dir + "/dfxml/analyze_with_py360.sh/py360.dfxml"
+    dps["uxtaf"]  = image_output_dir + "/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
 
     pairs = [
       ("fiwalk","uxtaf"),
@@ -35,11 +44,10 @@ if __name__ == "__main__":
       ("py360","fiwalk"),
     ]
 
-    image_output_dir = opts.xmldir
     if os.path.isdir(image_output_dir):
         for (prog1,prog2) in pairs:
-            xml1_relpath = image_output_dir + "/" + prog1 + ".dfxml"
-            xml2_relpath = image_output_dir + "/" + prog2 + ".dfxml"
+            xml1_relpath = dps[prog1]
+            xml2_relpath = dps[prog2]
 
             if not os.path.exists(xml1_relpath):
                 continue

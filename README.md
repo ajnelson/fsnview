@@ -26,7 +26,7 @@ FSNView runs these steps:
 By default, a directory is created in the current working directory, named after the extensionless disk image name.  For example, the command `fsnview /bigstorage/DISKIMAGE.iso` creates the directory `./DISKIMAGE`.  Its hierarchy is:
 
 * `parts_mount/` - A directory for analyzing the disk image's partitions with `upartsfs`; used as a FUSE file system mount.
-* `dfxml/analyze_with_fiwalk.sh` - (XTAF only)
+* `dfxml/analyze_with_fiwalk.sh`
 * `dfxml/analyze_with_uxtaf.sh` - (XTAF only)
 * `dfxml/analyze_with_py360.sh` - (XTAF only)
 * `differences/` - Various comparisons of the DFXML
