@@ -79,16 +79,17 @@ if __name__ == "__main__":
     log = logging.getLogger()
     log.setLevel(logging.DEBUG if opts.debug else logging.INFO)
 
-    out_latex = open("summary.tex", "w")
-    out_html = open("summary.html", "w")
-
-    image_output_dir = opts.xmldir
+    image_output_dir = os.path.abspath(os.path.expanduser(opts.xmldir))
     if not os.path.isdir(image_output_dir):
-        raise Exception("Argument 'xmldir' is not a directory: %r." % image_output_dir)
+        logging.debug("image_output_dir = %r" % image_output_dir)
+        raise Exception("Argument 'xmldir' is not a directory: %r." % opts.xmldir)
+
+    out_latex = open(os.path.join(image_output_dir, "differences/summary.tex"), "w")
+    out_html = open(os.path.join(image_output_dir, "differences/summary.html"), "w")
 
     summarizer = Summarizer()
     for prog in ["fiwalk","uxtaf","py360"]:
-        xml_relpath = image_output_dir + "/" + prog + ".dfxml"
+        xml_relpath = image_output_dir + "/dfxml/analyze_with_" + prog + ".sh/" + prog + ".dfxml"
         summarizer.count_xml(prog, xml_relpath)
 
     log.debug("summarizer.stats_summary = %r" % summarizer.stats_summary)

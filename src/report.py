@@ -95,6 +95,16 @@ def main():
       </table>
     </section>""")
 
+    #Write summary section
+    print("""\
+    <section>
+      <header><h2>Summary</h2></header>""")
+    with open(os.path.join(results_root, "differences/summary.html"), "r") as summary_table_fh:
+        for line in summary_table_fh:
+            print(line)
+    print("""\
+    </section>""")
+
     #Write differences section
     stuff = dict()
     stuff["idifference_version"] = idifference.__version__

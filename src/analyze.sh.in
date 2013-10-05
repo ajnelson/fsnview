@@ -57,6 +57,7 @@ set -e
 rm -f diffs.html
 rm -rf differences
 "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" .
+"$PYTHON3" "${pkgdatadir}/python3/make_summary_stats.py" .
 ${pkgdatadir}/report.sh "$output_root"
 
 popd
