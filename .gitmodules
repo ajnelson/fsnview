@@ -10,3 +10,6 @@
 [submodule "deps/dfxml"]
 	path = deps/dfxml
 	url = https://github.com/ajnelson/dfxml.git
+[submodule "deps/dfxml_schema"]
+	path = deps/dfxml_schema
+	url = https://github.com/dfxml-working-group/dfxml_schema.git
