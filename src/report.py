@@ -14,6 +14,7 @@ def make_status_dict(results_dirname, expected_result_names):
     """
     retval = dict()
     if not os.path.exists(results_dirname):
+        logging.debug("Could not find results subdirectory %r; returning empty status dictionary." % results_dirname)
         return retval
     for (dirpath, dirnames, filenames) in os.walk(results_dirname):
         for filename in filenames:
