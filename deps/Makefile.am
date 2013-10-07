@@ -1,7 +1,16 @@
 SUBDIRS = sleuthkit uxtaf
 
+dfxmlschemadir = ${pkgdatadir}/dfxml_schema
+dfxmlschemarefdir = ${dfxmlschemadir}/ref
 fsnpydir = ${pkgdatadir}/python2
-fsnpysubdir = ${pkgdatadir}/python2/py360
+fsnpysubdir = ${fsnpydir}/python2/py360
+
+dist_dfxmlschema_EXTRA = \
+  dfxml_schema/dfxml.xsd
+
+dist_dfxmlschemaref_EXTRA = \
+  dfxml_schema/ref/dc.xsd \
+  dfxml_schema/ref/xml.xsd
 
 dist_fsnpy_PYTHON = \
   py360/gamertags.py \

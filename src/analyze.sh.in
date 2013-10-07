@@ -13,6 +13,8 @@ output_root="$(get_abspath "$2")"
 mkdir -p "$output_root"
 pushd "$output_root"
 
+mkdir validation
+
 if [ ! -r "$disk_image" ]; then
   echo "$0: Error: Disk image file not readable." >&2
   exit 2
@@ -31,6 +33,8 @@ if [ true ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_fiwalk.sh" "$disk_image" "${output_root}/dfxml/analyze_with_fiwalk.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_fiwalk.sh.done.log"
+      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" 2>"${output_root}/validation/fiwalk.dfxml.err.log"
+      echo $? >"${output_root}/validation/fiwalk.dfxml.status.log"
     fi
   fi
 fi
@@ -41,6 +45,8 @@ if [ $do_xtaf -eq 1 ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_uxtaf.sh" "$disk_image" "${output_root}/dfxml/analyze_with_uxtaf.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_uxtaf.sh.done.log"
+      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml" 2>"${output_root}/validation/uxtaf.dfxml.err.log"
+      echo $? >"${output_root}/validation/uxtaf.dfxml.status.log"
     fi
   fi
 
@@ -49,6 +55,8 @@ if [ $do_xtaf -eq 1 ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_py360.sh" "$disk_image" "${output_root}/dfxml/analyze_with_py360.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_py360.sh.done.log"
+      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" 2>"${output_root}/validation/py360.dfxml.err.log"
+      echo $? >"${output_root}/validation/py360.dfxml.status.log"
     fi
   fi
 fi
@@ -58,6 +66,6 @@ rm -f diffs.html
 rm -rf differences
 "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" .
 "$PYTHON3" "${pkgdatadir}/python3/make_summary_stats.py" .
-${pkgdatadir}/report.sh "$output_root"
+${pkgdatadir}/report.sh .
 
 popd
