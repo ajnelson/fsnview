@@ -5,10 +5,10 @@ dfxmlschemarefdir = ${dfxmlschemadir}/ref
 fsnpydir = ${pkgdatadir}/python2
 fsnpysubdir = ${fsnpydir}/python2/py360
 
-dist_dfxmlschema_EXTRA = \
+dist_dfxmlschema_DATA = \
   dfxml_schema/dfxml.xsd
 
-dist_dfxmlschemaref_EXTRA = \
+dist_dfxmlschemaref_DATA = \
   dfxml_schema/ref/dc.xsd \
   dfxml_schema/ref/xml.xsd
 
