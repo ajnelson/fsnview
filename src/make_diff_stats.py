@@ -10,16 +10,77 @@ import sys
 
 import idifference
 
+import Objects
+
 logging.basicConfig()
+
+class Differ(object):
+    def __init__(self, pre_path, post_path):
+        self._pre_path = pre_path
+        self._post_path = post_path
+
+    def __repr__(self):
+        return "Differ(%r, %r)" % (self._pre_path, self._post_path)
+
+    def write_differential_dfxml(self, output_path):
+        raise NotImplementedError("Need to make a library out of make_differential_dfxml.py")
+
+class DifferTabulator(object):
+    def __init__(self):
+        #Key: Pairs of paths to DFXML files
+        self._differs = dict()
+
+        #Key: Path to DFXML file
+        #Value: Pair, (long label, short label)
+        self._annos = dict()
+
+    def add(self, long_label, short_label, path):
+        self._annos[path] = (long_label, short_label)
+        for x in self._annos:
+            for y in self._annos:
+                if x == y:
+                    continue
+                if (x, y) not in self._differs:
+                    self._differs[(x, y)] = Differ(x, y)
+        logging.debug("self._annos = %r" % self._annos)
+        logging.debug("self._differs = %r" % self._differs)
+
+    def write_differential_dfxml(self, path_prefix):
+        "Generate differential DFXML files."
+        for key in self._differs:
+            path0 = key[0]
+            path1 = key[1]
+            labels0 = self._annos[path0]
+            labels1 = self._annos[path1]
+            self._differs[key].write_differential_dfxml(os.path.join(path_prefix, labels0[0] + "-" + labels1[0]))
+
+def main():
+    global args
+    dt = DifferTabulator()
+
+    for annopath in args.labeled_xml_file:
+        parts = annopath.split(":")
+        if len(parts) < 3:
+            raise ValueError("DFXML path specifications must be of the form long_label:short_label:path.")
+        long_label = parts[0]
+        short_label = parts[1]
+        path = ":".join(parts[2:])
+        dt.add(long_label, short_label, path)
+
+    dt.write_differential_dfxml(".")
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("xmldir", help="Directory containing output of fsnview")
+    argparser.add_argument("labeled_xml_file", help="List of DFXML files, each colon-prefixed with a long and then a short label (e.g. 'Fiwalk:fi:fiout.dfxml')", nargs="+")
     argparser.add_argument("-d", "--debug", help="Enable debug printing", action="store_true")
-    opts = argparser.parse_args()
+    args = argparser.parse_args()
 
     log = logging.getLogger()
-    log.setLevel(logging.DEBUG if opts.debug else logging.INFO)
+    log.setLevel(logging.DEBUG if args.debug else logging.INFO)
+
+    main()
+    import sys
+    sys.exit(127)
 
     image_output_dir = os.path.abspath(os.path.expanduser(opts.xmldir))
 
