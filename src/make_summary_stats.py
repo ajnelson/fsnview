@@ -171,6 +171,7 @@ th.breakout {text-indent: 4em;}
             formatted = template1 % stats_dict
 
             fh.write(formatted)
+
     def write_latex(self, fp):
         with open(fp, "w") as fh:
             format_dict = self._get_format_dict()
