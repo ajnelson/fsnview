@@ -11,6 +11,7 @@ import sys
 import idifference
 
 import Objects
+import make_differential_dfxml
 
 logging.basicConfig()
 
@@ -23,7 +24,10 @@ class Differ(object):
         return "Differ(%r, %r)" % (self._pre_path, self._post_path)
 
     def write_differential_dfxml(self, output_path):
-        raise NotImplementedError("Need to make a library out of make_differential_dfxml.py")
+        with open(output_path, "w") as output_fh:
+            d = make_differential_dfxml.make_differential_dfxml(self._pre_path, self._post_path)
+            output_fh.write("""<?xml version="1.0"?>\n""")
+            print(d.to_dfxml(), file=output_fh)
 
 class DifferTabulator(object):
     def __init__(self):
@@ -52,7 +56,7 @@ class DifferTabulator(object):
             path1 = key[1]
             labels0 = self._annos[path0]
             labels1 = self._annos[path1]
-            self._differs[key].write_differential_dfxml(os.path.join(path_prefix, labels0[0] + "-" + labels1[0]))
+            self._differs[key].write_differential_dfxml(os.path.join(path_prefix, labels0[0] + "-" + labels1[0] + ".dfxml"))
 
 def main():
     global args
