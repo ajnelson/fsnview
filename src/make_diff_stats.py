@@ -19,17 +19,67 @@ class Differ(object):
     def __init__(self, pre_path, post_path):
         self._pre_path = pre_path
         self._post_path = post_path
+        self._dfxml_object = None
+        self._volume_diffs = None
+        self._file_diffs = None
 
     def __repr__(self):
         return "Differ(%r, %r)" % (self._pre_path, self._post_path)
 
+    def count_property_diffs(self):
+        counter = collections.defaultdict(lambda: 0)
+        d = self.dfxml_object
+        return counter
+
     def write_differential_dfxml(self, output_path):
+        d = self.dfxml_object
         with open(output_path, "w") as output_fh:
-            d = make_differential_dfxml.make_differential_dfxml(self._pre_path, self._post_path)
             output_fh.write("""<?xml version="1.0"?>\n""")
             print(d.to_dfxml(), file=output_fh)
 
+    @property
+    def file_diffs(self):
+        """Populates on first access.  There is intentionally no setter."""
+        if self._file_diffs is None:
+            c = collections.defaultdict(lambda: 0)
+            d = self.dfxml_object
+            for o in d.all_files():
+                for diff in o.diffs:
+                    c[diff] += 1
+                #Break out some stats further by file and directory
+                if diff in ["filesize", "sha1"]:
+                    if o.name_type in ["d", "r"]:
+                        simplified_name_type = o.name_type
+                    else:
+                        simplified_name_type = "other"
+                    c[diff + "/" + simplified_name_type] += 1
+            self._file_diffs = c
+        return self._file_diffs
+
+    @property
+    def dfxml_object(self):
+        """Populates on first access.  There is intentionally no setter."""
+        if self._dfxml_object is None:
+            self._dfxml_object = make_differential_dfxml.make_differential_dfxml(self._pre_path, self._post_path)
+        return self._dfxml_object
+
+    @property
+    def volume_diffs(self):
+        """Populates on first access.  There is intentionally no setter."""
+        if self._volume_diffs is None:
+            c = collections.defaultdict(lambda: 0)
+            d = self.dfxml_object
+            for v in d.all_volumes():
+                for diff in o.diffs:
+                    c[diff] += 1
+            self._volume_diffs = c
+        return self._volume_diffs
+
 class DifferTabulator(object):
+
+    #The OrderedDict here lets insertion order determine the metadata breakout order in the generated tables.
+    _diff_annos = collections.OrderedDict()
+
     def __init__(self):
         #Key: Pairs of paths to DFXML files
         self._differs = dict()
@@ -37,6 +87,78 @@ class DifferTabulator(object):
         #Key: Path to DFXML file
         #Value: Pair, (long label, short label)
         self._annos = dict()
+
+        self._format_dict = None
+        self._stats_dict = None
+
+        #The entries containing '/' are broken out in the Differ class.
+        self._diff_annos["sha1/d"] = "SHA-1 (dirs)"
+        self._diff_annos["sha1/r"] = "SHA-1 (files)"
+        self._diff_annos["sha1/other"] = "SHA-1 (other)"
+        self._diff_annos["filesize/d"] = "Filesize (dirs)"
+        self._diff_annos["filesize/r"] = "Filesize (files)"
+        self._diff_annos["filesize/other"] = "Filesize (other)"
+        self._diff_annos["mtime"] = "Modified time"
+        self._diff_annos["atime"] = "Access time"
+        self._diff_annos["ctime"] = "Metadata change time"
+        self._diff_annos["crtime"] = "Creation time"
+        self._diff_annos["datastart"] = "Data start offset"
+
+    def _get_format_dict(self):
+        if self._format_dict:
+            return self._format_dict
+
+        f = collections.defaultdict(lambda: str())
+        f["tool_count"] = len(self._annos)
+        f["html_colspan"] = len(self._differs) + 1
+
+        for (i, (long_label, short_label)) in enumerate(sorted(self._annos.values())):
+            if i+1 == len(self._annos):
+                f["tool_preamble_listing"] += ", and <em>" + long_label + "</em> (\"" + short_label + "\")"
+            else:
+                f["tool_preamble_listing"] += ", <em>" + long_label + "</em> (\"" + short_label + "\")"
+
+        #TODO There'll probably need to be another way to sort these later...
+        for (pre_path, post_path) in sorted(self._differs.keys()):
+            pre_short_label = self._annos[pre_path][1]
+            post_short_label = self._annos[post_path][1]
+
+            f["html_tool_column_headers"] += "<th>%s-%s</th>" % (pre_short_label, post_short_label)
+            f["html_row_added_files"] += "<td>%(added_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
+            f["html_row_missed_files"] += "<td>%(missed_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
+            f["html_row_renamed_files"] += "<td>%(renamed_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
+
+        for diff_breakout in DifferTabulator._diff_annos:
+            pre_short_label = self._annos[pre_path][1]
+            post_short_label = self._annos[post_path][1]
+
+            metadata_row = "<tr>"
+            metadata_row += "<th>" + DifferTabulator._diff_annos[diff_breakout] + "</th>"
+            for (pre_path, post_path) in sorted(self._differs.keys()):
+                metadata_row += "<td>%(" + "_".join([diff_breakout, pre_short_label, post_short_label]) + ")s</td>"
+            metadata_row += "</tr>\n"
+            f["html_rows_metadata_breakouts"] += metadata_row
+
+        self._format_dict = f
+        return self._format_dict
+
+    def _get_stats_dict(self):
+        if self._stats_dict:
+            return self._stats_dict
+
+        s = collections.defaultdict(lambda: ".")
+
+        for (pre_path, post_path) in self._differs.keys():
+            pre_short_label = self._annos[pre_path][1]
+            post_short_label = self._annos[post_path][1]
+            differ = self._differs[(pre_path, post_path)]
+            for diff_breakout in differ.file_diffs:
+                s["%s_%s_%s" % (diff_breakout, pre_short_label, post_short_label)] = str(differ.file_diffs[diff_breakout])
+
+        #Write metadata breakout rows (takes two loops)
+        self._stats_dict = s
+        logging.debug("self._stats_dict = %r" % s)
+        return self._stats_dict
 
     def add(self, long_label, short_label, path):
         self._annos[path] = (long_label, short_label)
@@ -48,6 +170,63 @@ class DifferTabulator(object):
                     self._differs[(x, y)] = Differ(x, y)
         logging.debug("self._annos = %r" % self._annos)
         logging.debug("self._differs = %r" % self._differs)
+
+    def write_html(self, fp):
+        with open(fp, "w") as fh:
+            format_dict = self._get_format_dict()
+            stats_dict = self._get_stats_dict()
+
+            template0 = """\
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      caption {text-align: left;}
+      th {text-align: left;}
+      thead th {border-bottom:1px solid black;}
+      tbody th {text-indent: 2em; padding-right: 1em;}
+      th.breakout {text-indent: 4em;}
+    </style>
+  </head>
+  <body>
+    <table>
+      <caption>Counts of file system parsing discrepancies between %(tool_count)s storage parsers%(tool_preamble_listing)s.  Counts are in differences from the first program's DFXML output to the second program, <em>e.g.</em> "Missed files" indicates the number of files the first program found that the second didn't.  "Files" includes directories.</caption>
+      <thead>
+        <tr>
+          <th>Differences in...</th>
+          %(html_tool_column_headers)s
+        </tr>
+      </thead>
+      <tfoot></tfoot>
+      <tbody>
+        <tr>
+          <th>Additional files</th>
+          %(html_row_added_files)s
+        </tr>
+        <tr>
+          <th>Missed files</th>
+          %(html_row_missed_files)s
+        </tr>
+        <tr>
+          <th>Renamed files</th>
+          %(html_row_renamed_files)s
+        </tr>
+        <tr>
+          <th colspan="%(html_colspan)d">Metadata:</th>
+        </tr>
+        %(html_rows_metadata_breakouts)s
+      </tbody>
+    </table>
+  </body>
+</html>
+"""
+
+            template1 = template0 % format_dict
+            formatted = template1 % stats_dict
+            fh.write(formatted)
+
+    def write_latex(self, fp):
+        raise NotImplementedError("TODO")
 
     def write_differential_dfxml(self, path_prefix):
         "Generate differential DFXML files."
@@ -72,6 +251,8 @@ def main():
         dt.add(long_label, short_label, path)
 
     dt.write_differential_dfxml(".")
+    dt.write_html("diffs.html")
+    dt.write_latex("diffs.tex")
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
