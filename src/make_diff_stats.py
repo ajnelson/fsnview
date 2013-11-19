@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import argparse
 import logging
@@ -43,7 +43,9 @@ class Differ(object):
         if self._file_diffs is None:
             c = collections.defaultdict(lambda: 0)
             d = self.dfxml_object
-            for o in d.all_files():
+            for o in d:
+                if not isinstance(o, Objects.FileObject):
+                    continue
                 for diff in o.diffs:
                     c[diff] += 1
                 #Break out some stats further by file and directory
