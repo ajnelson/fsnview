@@ -3,7 +3,7 @@ SUBDIRS = sleuthkit uxtaf
 dfxmlschemadir = ${pkgdatadir}/dfxml_schema
 dfxmlschemarefdir = ${dfxmlschemadir}/ref
 fsnpydir = ${pkgdatadir}/python2
-fsnpysubdir = ${fsnpydir}/python2/py360
+fsnpysubdir = ${fsnpydir}/py360
 
 dist_dfxmlschema_DATA = \
   dfxml_schema/dfxml.xsd
