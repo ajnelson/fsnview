@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 import logging
 import idifference
@@ -100,7 +100,7 @@ def main():
     print("""\
     <section>
       <header><h2>Summary</h2></header>""")
-    with open(os.path.join(results_root, "differences/summary.html"), "r") as summary_table_fh:
+    with open(os.path.join(results_root, "summary.html"), "r") as summary_table_fh:
         for line in summary_table_fh:
             print(line)
     print("""\
@@ -124,7 +124,7 @@ def main():
     print("""\
       </dl>""")
 
-    with open(os.path.join(results_root, "differences/diffs.html"), "r") as diffs_table_fh:
+    with open(os.path.join(results_root, "diffs.html"), "r") as diffs_table_fh:
         for line in diffs_table_fh:
             print(line)
 

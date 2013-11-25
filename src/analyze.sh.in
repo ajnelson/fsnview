@@ -13,7 +13,7 @@ output_root="$(get_abspath "$2")"
 mkdir -p "$output_root"
 pushd "$output_root"
 
-mkdir validation
+mkdir -p validation
 
 if [ ! -r "$disk_image" ]; then
   echo "$0: Error: Disk image file not readable." >&2
