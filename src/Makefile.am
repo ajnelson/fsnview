@@ -18,5 +18,7 @@ dist_fsnpy_SCRIPTS = \
   fiwalk.py \
   idifference.py \
   make_diff_stats.py \
+  make_differential_dfxml.py \
   make_summary_stats.py \
+  Objects.py \
   report.py
