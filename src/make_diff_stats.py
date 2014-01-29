@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 import argparse
 import logging
@@ -286,7 +286,10 @@ def main():
         long_label = parts[0]
         short_label = parts[1]
         path = ":".join(parts[2:])
-        dt.add(long_label, short_label, path)
+        if os.path.exists(path):
+            dt.add(long_label, short_label, path)
+        else:
+            _logger.warning("Could not find file at %r.  Will not compare." % path)
 
     dt.write_differential_dfxml(".")
     dt.write_html("diffs.html")
