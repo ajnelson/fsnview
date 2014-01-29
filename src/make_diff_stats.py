@@ -8,8 +8,6 @@ import collections
 import os
 import sys
 
-import idifference
-
 import Objects
 import make_differential_dfxml
 
