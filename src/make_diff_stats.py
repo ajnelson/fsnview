@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 import argparse
 import logging
@@ -46,13 +46,13 @@ class Differ(object):
                     continue
                 for diff in o.diffs:
                     c[diff] += 1
-                #Break out some stats further by file and directory
-                if diff in ["filesize", "sha1"]:
-                    if o.name_type in ["d", "r"]:
-                        simplified_name_type = o.name_type
-                    else:
-                        simplified_name_type = "other"
-                    c[diff + "/" + simplified_name_type] += 1
+                    #Break out some stats further by file and directory
+                    if diff in ["filesize", "sha1"]:
+                        if o.name_type in ["d", "r"]:
+                            simplified_name_type = o.name_type
+                        else:
+                            simplified_name_type = "other"
+                        c[diff + "/" + simplified_name_type] += 1
             self._file_diffs = c
         return self._file_diffs
 
