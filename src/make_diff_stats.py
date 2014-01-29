@@ -11,7 +11,7 @@ import sys
 import Objects
 import make_differential_dfxml
 
-logging.basicConfig()
+_logger = logging.getLogger(os.path.basename(__file__))
 
 class Differ(object):
     def __init__(self, pre_path, post_path):
@@ -154,7 +154,7 @@ class DifferTabulator(object):
             f["latex_rows_metadata_breakouts"] += latex_metadata_row
 
         self._format_dict = f
-        #logging.debug("self._format_dict = %r" % f)
+        #_logger.debug("self._format_dict = %r" % f)
         return self._format_dict
 
     def _get_stats_dict(self):
@@ -172,7 +172,7 @@ class DifferTabulator(object):
 
         #Write metadata breakout rows (takes two loops)
         self._stats_dict = s
-        #logging.debug("self._stats_dict = %r" % s)
+        #_logger.debug("self._stats_dict = %r" % s)
         return self._stats_dict
 
     def add(self, long_label, short_label, path):
@@ -183,8 +183,8 @@ class DifferTabulator(object):
                     continue
                 if (x, y) not in self._differs:
                     self._differs[(x, y)] = Differ(x, y)
-        #logging.debug("self._annos = %r" % self._annos)
-        #logging.debug("self._differs = %r" % self._differs)
+        #_logger.debug("self._annos = %r" % self._annos)
+        #_logger.debug("self._differs = %r" % self._differs)
 
     def write_html(self, fp):
         with open(fp, "w") as fh:
@@ -299,8 +299,7 @@ if __name__ == "__main__":
     argparser.add_argument("-d", "--debug", help="Enable debug printing", action="store_true")
     args = argparser.parse_args()
 
-    log = logging.getLogger()
-    log.setLevel(logging.DEBUG if args.debug else logging.INFO)
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
     main()
 
