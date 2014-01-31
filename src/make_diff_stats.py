@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 
 import argparse
 import logging
@@ -202,7 +202,7 @@ class DifferTabulator(object):
   </head>
   <body>
     <table>
-      <caption>Counts of file system parsing discrepancies between %(tool_count)s storage parsers%(html_tool_preamble_listing)s.  Counts are in differences from the first program's DFXML output to the second program, <em>e.g.</em> "Missed files" indicates the number of files the first program found that the second didn't.  "Files" includes directories.</caption>
+      <caption>Counts of file system parsing discrepancies between %(tool_count)s storage parsers%(html_tool_preamble_listing)s.  Counts are in differences from the first program's DFXML output to the second program, <em>e.g.</em> "Missed files" indicates the number of files the first program found that the second didn't.  "Files" includes directories.  Difference statistics may be inflated slightly by unattempted matches of unallocated files (that is, insufficient data exists to properly match unallocated files now; so they are considered deleted from the baseline, and added in the latter image).</caption>
       <thead>
         <tr>
           <th>Differences in...</th>
@@ -242,7 +242,7 @@ class DifferTabulator(object):
     def write_latex(self, fp):
         with open(fp, "w") as fh:
             template0 = r"""\begin{table*}[htdp]
-\caption{Counts of file system parsing discrepancies between %(tool_count)s storage parsers%(latex_tool_preamble_listings)s.  Counts are in differences from the first program's DFXML output to the second program, \eg ``Missed files'' indicates the number of files the first program found that the second didn't.  ``Files'' includes directories.}
+\caption{Counts of file system parsing discrepancies between %(tool_count)s storage parsers%(latex_tool_preamble_listings)s.  Counts are in differences from the first program's DFXML output to the second program, \eg ``Missed files'' indicates the number of files the first program found that the second didn't.  ``Files'' includes directories.  Difference statistics may be inflated slightly by unattempted matches of unallocated files (that is, insufficient data exists to properly match unallocated files now; so they are considered deleted from the baseline, and added in the latter image).}
 \begin{center}
 \begin{tabular}{|l|%(latex_column_aligns)s|}
 \hline
@@ -287,7 +287,7 @@ def main():
         if os.path.exists(path):
             dt.add(long_label, short_label, path)
         else:
-            _logger.warning("Could not find file at %r.  Will not compare." % path)
+            _logger.error("Could not find file at %r.  Will not compare." % path)
 
     dt.write_differential_dfxml(".")
     dt.write_html("diffs.html")
