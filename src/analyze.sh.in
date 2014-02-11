@@ -83,7 +83,7 @@ rm -rf differences
 #This creates differential DFXML
 "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" \
   "Fiwalk:fi:${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" \
-  "Py360:py:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
+  "Py360:p3:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
   "Uxtaf:ux:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
 
 mkdir summaries

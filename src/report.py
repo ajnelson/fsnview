@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import logging
-import idifference
+import make_differential_dfxml
 import os
 
 def make_status_dict(results_dirname, expected_result_names):
@@ -108,17 +108,17 @@ def main():
 
     #Write differences section
     stuff = dict()
-    stuff["idifference_version"] = idifference.__version__
+    stuff["mdd_version"] = make_differential_dfxml.__version__
     print("""\
     <section>
       <header><h2>Differences in DFXML</h2></header>
-      <p>This table was created by using idifference.py (version <code>%(idifference_version)s</code>) as a library.  The name abbreviations are:</p>
+      <p>This table was created by using make_differential_dfxml.py (version <code>%(mdd_version)s</code>) as a library.  The name abbreviations are:</p>
       <dl>""" % stuff)
     abbreviations = dict()
     abbreviations["Ux"] = "Uxtaf"
     abbreviations["P3"] = "Py360"
     abbreviations["Fi"] = "Fiwalk"
-    for ab in abbreviations:
+    for ab in sorted(abbreviations.keys()):
         print("""\
       <dt>%s</dt><dd>%s</dd>""" % (ab, abbreviations[ab]))
     print("""\

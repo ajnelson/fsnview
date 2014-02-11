@@ -113,6 +113,7 @@ class DifferTabulator(object):
         self._diff_annos["ctime"] = "Metadata change time"
         self._diff_annos["crtime"] = "Creation time"
         self._diff_annos["datastart"] = "Data start offset"
+        self._diff_annos["byte_runs"] = "Byte run coverage"
 
     def _get_format_dict(self):
         if self._format_dict:
@@ -315,5 +316,4 @@ if __name__ == "__main__":
 
     main()
 
-#TODO Byte run coverage & & & & & & \\
 #TODO Directory entry count & & & & & & \\
