@@ -71,10 +71,16 @@ rm -rf differences
   "py360:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
   "uxtaf:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
 
+#This creates differential DFXML
 "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" \
   "Fiwalk:fi:${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" \
   "Py360:py:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
   "Uxtaf:ux:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
+
+mkdir summaries
+for x in $(ls *-*.dfxml); do
+  "$PYTHON3" "${pkgdatadir}/python3/summarize_differential_dfxml.py" --sort-by path --summary $x >summaries/$x.txt
+done
 
 ${pkgdatadir}/report.sh .
 

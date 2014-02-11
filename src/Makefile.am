@@ -21,4 +21,5 @@ dist_fsnpy_SCRIPTS = \
   make_differential_dfxml.py \
   make_summary_stats.py \
   Objects.py \
-  report.py
+  report.py \
+  summarize_differential_dfxml.py
