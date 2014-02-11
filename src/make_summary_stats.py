@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.1"
+__version__ = "0.2.2" 
 
 import argparse
 import logging
@@ -72,8 +72,8 @@ class SummarizerTabulator(object):
             format_dict["html_tool_column_headers"] += "<th>" + prog + "</th>"
 
             for sf in ["s", "f"]:
-                format_dict["latex_row_%s_parts_processed" % sf] += "& %(s/volumes/" + prog + ")s "
-                format_dict["html_row_%s_parts_processed" % sf] += "<td>%(s/volumes/" + prog + ")s</td>"
+                format_dict["latex_row_%s_parts_processed" % sf] += "& %(" + sf + "/volumes/" + prog + ")s "
+                format_dict["html_row_%s_parts_processed" % sf] += "<td>%(" + sf + "/volumes/" + prog + ")s</td>"
                 for ua in ["allocated", "unallocated", "unknown"]:
                     for df in ["dirs", "files", "unknown", "other"]:
                         format_dict["latex_row_%s_%s_%s" % (sf, ua, df)] += "& %(" + "/".join([sf, ua, df, prog]) + ")s "
