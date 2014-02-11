@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import argparse
 import logging
@@ -10,7 +10,7 @@ import sys
 
 import Objects
 
-logging.basicConfig()
+_logger = logging.getLogger(os.path.basename(__file__))
 
 class Summarizer(object):
     """
@@ -31,8 +31,9 @@ class Summarizer(object):
 
         self.failed = None
         try:
-            for obj in Objects.objects_from_file(xmlfile):
+            for (event, obj) in Objects.iterparse(xmlfile):
                 if isinstance(obj, Objects.VolumeObject):
+                    _logger.debug("Found a volume in %r." % xmlfile)
                     self.volumes.add(obj)
                 elif isinstance(obj, Objects.FileObject):
                     self.broken_out_files[(obj.alloc, obj.name_type)] += 1
@@ -85,16 +86,13 @@ class SummarizerTabulator(object):
         if self._stats_dict:
             return self._stats_dict
         num_stats_dict = collections.defaultdict(lambda: 0)
-        str_stats_dict = collections.defaultdict(lambda: ".")
+        str_stats_dict = collections.defaultdict(lambda: "0")
         for prog in sorted(self._summarizers.keys()):
             summarizer = self._summarizers[prog]
             breakouts = self._summarizers[prog].broken_out_files
             sf = "f" if summarizer.failed else "s"
 
-            #Only count the actual volume objects
-            non_null_volumes = [vol for vol in summarizer.volumes if vol is not None]
-            if len(non_null_volumes) > 0:
-                num_stats_dict[sf + "/volumes/" + prog] = len(non_null_volumes)
+            num_stats_dict[sf + "/volumes/" + prog] = len(summarizer.volumes)
 
             for key in breakouts:
                 alloc = key[0]
@@ -167,6 +165,8 @@ th.breakout {text-indent: 4em;}
 </body>
 </html>""" 
             template1 = template0 % format_dict
+            _logger.debug("HTML template1 = %s." % template1)
+            _logger.debug("HTML stats_dict = %r." % stats_dict)
             
             formatted = template1 % stats_dict
 
@@ -234,7 +234,6 @@ if __name__ == "__main__":
     argparser.add_argument("-d", "--debug", help="Enable debug printing", action="store_true")
     args = argparser.parse_args()
 
-    log = logging.getLogger()
-    log.setLevel(logging.DEBUG if args.debug else logging.INFO)
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
     main()
