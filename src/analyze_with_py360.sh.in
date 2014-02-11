@@ -4,4 +4,4 @@ prefix="@prefix@"
 pkgdatadir="@datarootdir@/@PACKAGE@"
 PYTHON2="@PYTHON@"
 
-"$PYTHON2" "${pkgdatadir}/python2/report360.py" -x "$1" && mv py360out.dfxml py360.dfxml
+"$PYTHON2" "${pkgdatadir}/python2/report360.py" --debug -X py360.dfxml "$1"
