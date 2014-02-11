@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PYTHON3="@PYTHON3@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
 prefix="@prefix@"
 pkgdatadir="@datarootdir@/@PACKAGE@"
 
@@ -19,18 +20,13 @@ fi
 
 pushd "$outdir" >/dev/null
 
-"$PYTHON3" "${pkgdatadir}/python3/report.py" --debug "$outdir" >report.html
+"$PYTHON3" "${pkgdatadir}/python3/report.py" --debug --fsnversion "$PACKAGE_VERSION" "$outdir" >report.html
 
 #TODO Whittle this Bash report, importing into Python version
 # Output file summary
 echo ""
 echo "Results"
 echo "======="
-echo ""
-echo ""
-echo "Review these files for between-tool differences:"
-echo ""
-ls diffs*.txt
 echo ""
 echo ""
 echo "Review these files for file system timelines according to each tool:"
