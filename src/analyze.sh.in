@@ -33,7 +33,10 @@ if [ true ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_fiwalk.sh" "$disk_image" "${output_root}/dfxml/analyze_with_fiwalk.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_fiwalk.sh.done.log"
-      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" 2>"${output_root}/validation/fiwalk.dfxml.err.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" \
+        >"${output_root}/validation/fiwalk.dfxml" \
+        2>"${output_root}/validation/fiwalk.dfxml.err.log"
       echo $? >"${output_root}/validation/fiwalk.dfxml.status.log"
     fi
   fi
@@ -45,7 +48,10 @@ if [ $do_xtaf -eq 1 ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_uxtaf.sh" "$disk_image" "${output_root}/dfxml/analyze_with_uxtaf.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_uxtaf.sh.done.log"
-      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml" 2>"${output_root}/validation/uxtaf.dfxml.err.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml" \
+        >"${output_root}/validation/uxtaf.dfxml" \
+        2>"${output_root}/validation/uxtaf.dfxml.err.log"
       echo $? >"${output_root}/validation/uxtaf.dfxml.status.log"
     fi
   fi
@@ -55,7 +61,10 @@ if [ $do_xtaf -eq 1 ]; then
     "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_py360.sh" "$disk_image" "${output_root}/dfxml/analyze_with_py360.sh"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_py360.sh.done.log"
-      xmllint --noout --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" "${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" 2>"${output_root}/validation/py360.dfxml.err.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
+        >"${output_root}/validation/py360.dfxml" \
+        2>"${output_root}/validation/py360.dfxml.err.log"
       echo $? >"${output_root}/validation/py360.dfxml.status.log"
     fi
   fi
@@ -79,7 +88,14 @@ rm -rf differences
 
 mkdir summaries
 for x in $(ls *-*.dfxml); do
+  #Write idifference-style summaries
   "$PYTHON3" "${pkgdatadir}/python3/summarize_differential_dfxml.py" --sort-by path --summary $x >summaries/$x.txt
+
+  #Format differential DFXML
+  xmllint --format \
+    $x \
+    > validation/$x \
+    2> validation/$x.err.log
 done
 
 ${pkgdatadir}/report.sh .
