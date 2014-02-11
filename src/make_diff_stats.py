@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 import argparse
 import logging
@@ -44,6 +44,16 @@ class Differ(object):
             for o in d:
                 if not isinstance(o, Objects.FileObject):
                     continue
+                #if len(o.diffs) > 0:
+                #    _logger.debug("Diffs of this FileObject: %r." % o.diffs)
+                #Record file count differences
+                if "new" in o.annos:
+                    c["added_files"] += 1
+                elif "deleted" in o.annos:
+                    c["missed_files"] += 1
+                elif "renamed" in o.annos:
+                    c["renamed_files"] += 1
+                #Record granular diffs
                 for diff in o.diffs:
                     c[diff] += 1
                     #Break out some stats further by file and directory
@@ -128,14 +138,14 @@ class DifferTabulator(object):
             post_short_label = self._annos[post_path][1]
 
             f["html_tool_column_headers"] += "<th>%s-%s</th>" % (pre_short_label, post_short_label)
-            f["html_row_added_files"] += "<td>%(added_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
-            f["html_row_missed_files"] += "<td>%(missed_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
-            f["html_row_renamed_files"] += "<td>%(renamed_files/" + pre_short_label + "/" + post_short_label + ")s</td>"
+            f["html_row_added_files"] += "<td>%(added_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
+            f["html_row_missed_files"] += "<td>%(missed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
+            f["html_row_renamed_files"] += "<td>%(renamed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
 
             f["latex_tool_column_headers"] += "%s-%s & " % (pre_short_label, post_short_label)
-            f["latex_row_added_files"] += "%(added_files/" + pre_short_label + "/" + post_short_label + ")s & "
-            f["latex_row_missed_files"] += "%(missed_files/" + pre_short_label + "/" + post_short_label + ")s & "
-            f["latex_row_renamed_files"] += "%(renamed_files/" + pre_short_label + "/" + post_short_label + ")s & "
+            f["latex_row_added_files"] += "%(added_files_" + pre_short_label + "_" + post_short_label + ")s & "
+            f["latex_row_missed_files"] += "%(missed_files_" + pre_short_label + "_" + post_short_label + ")s & "
+            f["latex_row_renamed_files"] += "%(renamed_files_" + pre_short_label + "_" + post_short_label + ")s & "
 
         for diff_breakout in DifferTabulator._diff_annos:
             pre_short_label = self._annos[pre_path][1]
@@ -161,7 +171,7 @@ class DifferTabulator(object):
         if self._stats_dict:
             return self._stats_dict
 
-        s = collections.defaultdict(lambda: ".")
+        s = collections.defaultdict(lambda: "0")
 
         for (pre_path, post_path) in self._differs.keys():
             pre_short_label = self._annos[pre_path][1]
@@ -235,7 +245,9 @@ class DifferTabulator(object):
 
             format_dict = self._get_format_dict()
             stats_dict = self._get_stats_dict()
+            _logger.debug("HTML stats_dict: %r." % stats_dict)
             template1 = template0 % format_dict
+            _logger.debug("HTML template1 = %s." % template1)
             formatted = template1 % stats_dict
             fh.write(formatted)
 

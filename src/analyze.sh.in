@@ -73,6 +73,7 @@ rm -rf differences
 
 #TODO (Partial commit here)
 "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" \
+  --debug \
   "Fiwalk:fi:${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" \
   "Py360:py:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
   "Uxtaf:ux:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
