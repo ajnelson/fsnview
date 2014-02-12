@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.5"
+__version__ = "0.2.6"
 
 import argparse
 import logging
@@ -143,10 +143,10 @@ class DifferTabulator(object):
             f["html_row_missed_files"] += "<td>%(missed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
             f["html_row_renamed_files"] += "<td>%(renamed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
 
-            f["latex_tool_column_headers"] += "%s-%s & " % (pre_short_label, post_short_label)
-            f["latex_row_added_files"] += "%(added_files_" + pre_short_label + "_" + post_short_label + ")s & "
-            f["latex_row_missed_files"] += "%(missed_files_" + pre_short_label + "_" + post_short_label + ")s & "
-            f["latex_row_renamed_files"] += "%(renamed_files_" + pre_short_label + "_" + post_short_label + ")s & "
+            f["latex_tool_column_headers"] += " & %s-%s" % (pre_short_label, post_short_label)
+            f["latex_row_added_files"] += " & %(added_files_" + pre_short_label + "_" + post_short_label + ")s"
+            f["latex_row_missed_files"] += " & %(missed_files_" + pre_short_label + "_" + post_short_label + ")s"
+            f["latex_row_renamed_files"] += " & %(renamed_files_" + pre_short_label + "_" + post_short_label + ")s"
 
         for diff_breakout in DifferTabulator._diff_annos:
             pre_short_label = self._annos[pre_path][1]

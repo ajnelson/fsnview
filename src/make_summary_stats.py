@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.2" 
+__version__ = "0.2.3" 
 
 import argparse
 import logging
@@ -185,21 +185,18 @@ th.breakout {text-indent: 4em;}
 \hline
 %(latex_tool_column_headers)s \\
 \hline
-Partitions processed & %(latex_row_s_parts_processed)s \\
-\hline
-Allocated directories & %(latex_row_s_allocated_dirs)s \\
-Allocated files &  %(latex_row_s_allocated_files)s \\
-Unallocated directories & %(latex_row_s_unallocated_dirs)s \\
-Unallocated files &  %(latex_row_s_unallocated_files)s \\
+Partitions processed %(latex_row_s_parts_processed)s \\
+Allocated directories %(latex_row_s_allocated_dirs)s \\
+Allocated files %(latex_row_s_allocated_files)s \\
+Unallocated directories %(latex_row_s_unallocated_dirs)s \\
+Unallocated files %(latex_row_s_unallocated_files)s \\
 \hline
 Partial data: & & & \\
-\hline
-~~Partitions partially processed & %(latex_row_f_parts_processed)s \\
-\hline
-~~Allocated directories & %(latex_row_f_allocated_dirs)s \\
-~~Allocated files &  %(latex_row_f_allocated_files)s \\
-~~Unallocated directories & %(latex_row_f_unallocated_dirs)s \\
-~~Unallocated files &  %(latex_row_f_unallocated_files)s \\
+~~Partitions partially processed %(latex_row_f_parts_processed)s \\
+~~Allocated directories %(latex_row_f_allocated_dirs)s \\
+~~Allocated files %(latex_row_f_allocated_files)s \\
+~~Unallocated directories %(latex_row_f_unallocated_dirs)s \\
+~~Unallocated files %(latex_row_f_unallocated_files)s \\
 \hline
 \end{tabular}
 \end{center}
