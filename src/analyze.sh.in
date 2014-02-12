@@ -86,7 +86,7 @@ rm -rf differences
   "Py360:p3:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
   "Uxtaf:ux:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
 
-mkdir summaries
+mkdir -p summaries
 for x in $(ls *-*.dfxml); do
   #Write idifference-style summaries
   "$PYTHON3" "${pkgdatadir}/python3/summarize_differential_dfxml.py" --sort-by path --summary $x >summaries/$x.txt
