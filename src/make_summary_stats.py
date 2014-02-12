@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.3" 
+__version__ = "0.2.4" 
 
 import argparse
 import logging
@@ -140,7 +140,7 @@ th.breakout {text-indent: 4em;}
 
 <body>
 <table>
-  <caption>Summary processing statistics for %(tool_count)d DFXML-producing storage parsers.  "Partial" counts are counts from tools that failed to generate completely parseable DFXML.</caption>
+  <caption>Summary processing statistics for %(tool_count)d DFXML-producing storage parsers.</caption>
   <thead>
     <tr>
       <th />
@@ -154,12 +154,6 @@ th.breakout {text-indent: 4em;}
     <tr><th>Allocated files</th>%(html_row_s_allocated_files)s</tr>
     <tr><th>Unallocated directories</th>%(html_row_s_unallocated_dirs)s</tr>
     <tr><th>Unallocated files</th>%(html_row_s_unallocated_files)s</tr>
-    <tr><th colspan="%(html_partial_colspan)d">Partial data:</th></tr>
-    <tr><th class="breakout">Partitions partially processed</th>%(html_row_f_parts_processed)s</tr>
-    <tr><th class="breakout">Allocated directories</th>%(html_row_f_allocated_dirs)s</tr>
-    <tr><th class="breakout">Allocated files</th>%(html_row_f_allocated_files)s</tr>
-    <tr><th class="breakout">Unallocated directories</th>%(html_row_f_unallocated_dirs)s</tr>
-    <tr><th class="breakout">Unallocated files</th>%(html_row_f_unallocated_files)s</tr>
   </tbody>
 </table>
 </body>
@@ -179,7 +173,7 @@ th.breakout {text-indent: 4em;}
 
             #Two passes:  First, create another template string with columnar places for numeric data.  Then populate the data.
             template0 = r"""\begin{table}[htdp]
-\caption{Summary processing statistics for %(tool_count)d DFXML-producing storage parsers.  ``Partial'' counts are counts from tools that failed to generate completely parseable DFXML.}
+\caption{Summary processing statistics for %(tool_count)d DFXML-producing storage parsers.}
 \begin{center}
 \begin{tabular}{|l|%(latex_column_aligns)s|}
 \hline
@@ -190,13 +184,6 @@ Allocated directories %(latex_row_s_allocated_dirs)s \\
 Allocated files %(latex_row_s_allocated_files)s \\
 Unallocated directories %(latex_row_s_unallocated_dirs)s \\
 Unallocated files %(latex_row_s_unallocated_files)s \\
-\hline
-Partial data: & & & \\
-~~Partitions partially processed %(latex_row_f_parts_processed)s \\
-~~Allocated directories %(latex_row_f_allocated_dirs)s \\
-~~Allocated files %(latex_row_f_allocated_files)s \\
-~~Unallocated directories %(latex_row_f_unallocated_dirs)s \\
-~~Unallocated files %(latex_row_f_unallocated_files)s \\
 \hline
 \end{tabular}
 \end{center}
