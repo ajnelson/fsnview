@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.6"
+__version__ = "0.3.0"
 
 import argparse
 import logging
@@ -46,13 +46,28 @@ class Differ(object):
                     continue
                 #if len(o.diffs) > 0:
                 #    _logger.debug("Diffs of this FileObject: %r." % o.diffs)
+
                 #Record file count differences
                 if "new" in o.annos:
                     c["added_files"] += 1
+
+                    breakout = "alloc" if o.alloc else "unalloc"
+                    c["added%s_files" % breakout] += 1
                 elif "deleted" in o.annos:
                     c["missed_files"] += 1
+
+                    #This really shouldn't happen, but just in case...
+                    if o.original_fileobject is None:
+                        _logger.warning("Data anomaly: A file flagged as deleted doesn't have an original_fileobject.")
+                        _logger.debug("File object: %r." % o)
+                    else:
+                        breakout = "alloc" if o.original_fileobject.alloc else "unalloc"
+                    c["missed%s_files" % breakout] += 1
                 elif "renamed" in o.annos:
                     c["renamed_files"] += 1
+
+                    breakout = "alloc" if o.alloc else "unalloc"
+                    c["renamed%s_files" % breakout] += 1
                 #Record granular diffs
                 for diff in o.diffs:
                     c[diff] += 1
@@ -139,14 +154,16 @@ class DifferTabulator(object):
             post_short_label = self._annos[post_path][1]
 
             f["html_tool_column_headers"] += "<th>%s-%s</th>" % (pre_short_label, post_short_label)
-            f["html_row_added_files"] += "<td>%(added_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
-            f["html_row_missed_files"] += "<td>%(missed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
-            f["html_row_renamed_files"] += "<td>%(renamed_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
-
             f["latex_tool_column_headers"] += " & %s-%s" % (pre_short_label, post_short_label)
-            f["latex_row_added_files"] += " & %(added_files_" + pre_short_label + "_" + post_short_label + ")s"
-            f["latex_row_missed_files"] += " & %(missed_files_" + pre_short_label + "_" + post_short_label + ")s"
-            f["latex_row_renamed_files"] += " & %(renamed_files_" + pre_short_label + "_" + post_short_label + ")s"
+
+            for breakout in ["", "alloc", "unalloc"]:
+                f["html_row_added%s_files" % breakout] += "<td>%(added" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
+                f["html_row_missed%s_files" % breakout] += "<td>%(missed" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
+                f["html_row_renamed%s_files" % breakout] += "<td>%(renamed" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s</td>"
+
+                f["latex_row_added%s_files" % breakout] += " & %(added" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s"
+                f["latex_row_missed%s_files" % breakout] += " & %(missed" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s"
+                f["latex_row_renamed%s_files" % breakout] += " & %(renamed" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s"
 
         for diff_breakout in DifferTabulator._diff_annos:
             pre_short_label = self._annos[pre_path][1]
@@ -206,6 +223,7 @@ class DifferTabulator(object):
     <style type="text/css">
       caption {text-align: left;}
       th {text-align: left;}
+      td {text-align: right;}
       thead th {border-bottom:1px solid black;}
       tbody th {text-indent: 2em; padding-right: 1em;}
       th.breakout {text-indent: 4em;}
@@ -227,12 +245,36 @@ class DifferTabulator(object):
           %(html_row_added_files)s
         </tr>
         <tr>
+          <th class="breakout">Allocated</th>
+          %(html_row_addedalloc_files)s
+        </tr>
+        <tr>
+          <th class="breakout">Unallocated</th>
+          %(html_row_addedunalloc_files)s
+        </tr>
+        <tr>
           <th>Missed files</th>
           %(html_row_missed_files)s
         </tr>
         <tr>
+          <th class="breakout">Allocated</th>
+          %(html_row_missedalloc_files)s
+        </tr>
+        <tr>
+          <th class="breakout">Unallocated</th>
+          %(html_row_missedunalloc_files)s
+        </tr>
+        <tr>
           <th>Renamed files</th>
           %(html_row_renamed_files)s
+        </tr>
+        <tr>
+          <th class="breakout">Allocated</th>
+          %(html_row_renamedalloc_files)s
+        </tr>
+        <tr>
+          <th class="breakout">Unallocated</th>
+          %(html_row_renamedunalloc_files)s
         </tr>
         <tr>
           <th colspan="%(html_colspan)d">Metadata:</th>
@@ -262,10 +304,19 @@ class DifferTabulator(object):
 Differences in... %(latex_tool_column_headers)s \\
 \hline
 Additional files %(latex_row_added_files)s \\
+~~Allocated%(latex_row_addedalloc_files)s \\
+~~Unallocated%(latex_row_addedunalloc_files)s \\
+\hline
 Missed files %(latex_row_missed_files)s \\
+~~Allocated%(latex_row_missedalloc_files)s \\
+~~Unallocated%(latex_row_missedunalloc_files)s \\
+\hline
 Renamed files %(latex_row_renamed_files)s \\
+~~Allocated%(latex_row_renamedalloc_files)s \\
+~~Unallocated%(latex_row_renamedunalloc_files)s \\
+\hline
 Metadata: %(metadata_row_span)s \\
-%(latex_rows_metadata_breakouts)s \hline
+%(latex_rows_metadata_breakouts)s\hline
 \end{tabular}
 \end{center}
 \label{default}
