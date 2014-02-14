@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 import argparse
 import logging
@@ -166,14 +166,13 @@ class DifferTabulator(object):
                 f["latex_row_renamed%s_files" % breakout] += " & %(renamed" + breakout + "_files_" + pre_short_label + "_" + post_short_label + ")s"
 
         for diff_breakout in DifferTabulator._diff_annos:
-            pre_short_label = self._annos[pre_path][1]
-            post_short_label = self._annos[post_path][1]
-
             html_metadata_row = "<tr>"
             latex_metadata_row = ""
             html_metadata_row += "<th>" + DifferTabulator._diff_annos[diff_breakout] + "</th>"
             latex_metadata_row += "~~" + DifferTabulator._diff_annos[diff_breakout]
             for (pre_path, post_path) in sorted(self._differs.keys()):
+                pre_short_label = self._annos[pre_path][1]
+                post_short_label = self._annos[post_path][1]
                 html_metadata_row += "<td>%(" + "_".join([diff_breakout, pre_short_label, post_short_label]) + ")s</td>"
                 latex_metadata_row += " & %(" + "_".join([diff_breakout, pre_short_label, post_short_label]) + ")s "
             html_metadata_row += "</tr>\n"
