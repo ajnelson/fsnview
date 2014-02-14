@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 import argparse
 import logging
@@ -127,7 +127,6 @@ class DifferTabulator(object):
         self._diff_annos["atime"] = "Access time"
         self._diff_annos["ctime"] = "Metadata change time"
         self._diff_annos["crtime"] = "Creation time"
-        self._diff_annos["datastart"] = "Data start offset"
         self._diff_annos["byte_runs"] = "Byte run coverage"
 
     def _get_format_dict(self):
