@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 import argparse
 import logging
@@ -85,7 +85,7 @@ class Differ(object):
     def dfxml_object(self):
         """Populates on first access.  There is intentionally no setter."""
         if self._dfxml_object is None:
-            self._dfxml_object = make_differential_dfxml.make_differential_dfxml(self._pre_path, self._post_path)
+            self._dfxml_object = make_differential_dfxml.make_differential_dfxml(self._pre_path, self._post_path, glom_byte_runs=True)
         return self._dfxml_object
 
     @property
