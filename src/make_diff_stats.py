@@ -127,7 +127,8 @@ class DifferTabulator(object):
         self._diff_annos["atime"] = "Access time"
         self._diff_annos["ctime"] = "Metadata change time"
         self._diff_annos["crtime"] = "Creation time"
-        self._diff_annos["data_brs"] = "Byte run coverage"
+        #self._diff_annos["name_brs"] = "Name entry location" #TODO This needs more testing.
+        self._diff_annos["data_brs"] = "Data byte run coverage"
 
     def _get_format_dict(self):
         if self._format_dict:
