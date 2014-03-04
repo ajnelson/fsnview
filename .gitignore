@@ -11,14 +11,17 @@ Makefile
 /aclocal.m4
 /build
 /compile
+/config.guess
 /config.log
 /config.status
+/config.sub
 /configure
 /depcomp
 /install-sh
 /missing
 /fsnview-*.tar.gz
 /py-compile
+/test-driver
 
 # Python
 src/__pycache__
