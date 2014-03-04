@@ -17,6 +17,7 @@ get_abspath() {
 script="$1"
 disk_image="$2"
 rel_outdir="$3"
+upartsfs_mntdir="$4"
 abs_outdir="$(get_abspath "$rel_outdir")"
 
 #Output setup
@@ -24,7 +25,7 @@ mkdir -p "$abs_outdir"
 cd "$abs_outdir"
 
 #Execution and logging
-"$script" "$disk_image" "$abs_outdir" >"${abs_outdir}.out.log" 2>"${abs_outdir}.err.log"
+"$script" "$disk_image" "$abs_outdir" "$upartsfs_mntdir" >"${abs_outdir}.out.log" 2>"${abs_outdir}.err.log"
 rc=$?
 echo $rc >"${abs_outdir}.status.log"
 

@@ -69,7 +69,7 @@ if [ $do_xtaf -eq 1 ]; then
 
   if [ ! -r "${output_root}/dfxml/analyze_with_py360.sh.done.log" ]; then
     rm -rf "${output_root}/dfxml/analyze_with_py360.sh*"
-    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_py360.sh" "$disk_image" "${output_root}/dfxml/analyze_with_py360.sh"
+    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_py360.sh" "$disk_image" "${output_root}/dfxml/analyze_with_py360.sh" "${output_root}/mnt"
     if [ $? -eq 0 ]; then
       date >"${output_root}/dfxml/analyze_with_py360.sh.done.log"
       xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \

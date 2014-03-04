@@ -14,6 +14,7 @@ dist_dfxmlschemaref_DATA = \
 
 dist_fsnpy_PYTHON = \
   py360/gamertags.py \
+  py360/make_dfxml.py \
   py360/png_carve.py \
   py360/report360.py
 

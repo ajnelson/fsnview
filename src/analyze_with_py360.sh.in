@@ -3,5 +3,28 @@
 prefix="@prefix@"
 pkgdatadir="@datarootdir@/@PACKAGE@"
 PYTHON2="@PYTHON@"
+PYTHON3="@PYTHON3@"
 
-"$PYTHON2" "${pkgdatadir}/python2/report360.py" --debug -X py360.dfxml "$1"
+echo "DEBUG:analyze_with_py360.sh:\$@ = $@" >&2
+upartsfs_mount="$3"
+
+#Set up array of partition arguments, formatted as cat_partitions.py will want them
+#(That program takes partitions prefixed with their within-disk byte offset, and a colon for delimiting)
+declare -a part_args
+
+for x in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
+  part_image="${upartsfs_mount}/by_offset/$x"
+  echo "DEBUG:analyze_with_py360.sh:part_image = $part_image" >&2
+  if [ -r "${part_image}" ]; then
+    "$PYTHON2" "${pkgdatadir}/python2/make_dfxml.py" --debug "${part_image}" | xmllint --format - > $x.dfxml 2> "$x.dfxml.err.log"
+    rc=$?
+    echo $rc >"$x.dfxml.status.log"
+
+    if [ $rc == 0 ]; then
+      #This mess of characters is an append.  http://tldp.org/LDP/abs/html/arrays.html
+      part_args[${#part_args[@]}]="$x:$x.dfxml"
+    fi
+  fi
+done
+
+"$PYTHON3" "${pkgdatadir}/python3/cat_partitions.py" --debug "${part_args[@]}" >py360.dfxml
