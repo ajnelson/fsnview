@@ -13,11 +13,22 @@ output_root="$(get_abspath "$2")"
 mkdir -p "$output_root"
 pushd "$output_root"
 
+mkdir -p mnt
 mkdir -p validation
 
 if [ ! -r "$disk_image" ]; then
   echo "$0: Error: Disk image file not readable." >&2
   exit 2
+fi
+
+#Ensure the disk image is mounted with UPartsFS.
+if [ $(mount | grep "$PWD/mnt" | wc -l) -ne 1 ]; then
+  "${pkgdatadir}/upartsfs/bin/upartsfs" mnt "$disk_image"
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "Error mounting disk image with UPartsFS.  Aborting." >&2
+    exit $rc
+  fi
 fi
 
 do_xtaf=0
@@ -70,6 +81,12 @@ if [ $do_xtaf -eq 1 ]; then
   fi
 fi
 
+umount mnt || fusermount -u mnt
+umountrc=$?
+if [ $umountrc -ne 0 ]; then
+  echo "Warning: Encountered an error unmounting the disk image from UPartsFS." >&2
+fi
+
 set -e
 rm -f diffs.{tex,html}
 rm -f summary.{tex,html}
@@ -101,3 +118,8 @@ done
 ${pkgdatadir}/report.sh .
 
 popd
+
+#Repeat warning
+if [ $umountrc -ne 0 ]; then
+  echo "Warning: Could not unmount disk image from UPartsFS.  This directory is still a mount point in use: '$PWD/mnt'." >&2
+fi
