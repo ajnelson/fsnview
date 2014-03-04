@@ -14,6 +14,7 @@ dist_pkgdata_SCRIPTS = \
   compare.sh
 
 dist_fsnpy_SCRIPTS = \
+  cat_partitions.py \
   dfxml.py \
   fiwalk.py \
   idifference.py \
