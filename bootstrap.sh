@@ -6,10 +6,23 @@ fi
 
 set -e
 
-if [ ! -r deps/dfxml/python/dfxml.py -o ! -r deps/sleuthkit/configure.ac -o ! -r deps/py360/report360.py -o ! -r deps/upartsfs/configure.ac ]; then
+if [ ! -r deps/dfxml/python/dfxml.py -o \
+  ! -r deps/sleuthkit/configure.ac -o \
+  ! -r deps/py360/report360.py -o \
+  ! -r deps/upartsfs/configure.ac \
+]; then
   git submodule init
   git submodule sync
   git submodule update
+fi
+
+#In case Git doesn't recursively initialize submodules
+if [ ! -r deps/py360/py360/Objects.py ]; then
+  pushd deps/py360
+  git submodule init
+  git submodule sync
+  git submodule update
+  popd
 fi
 
 echo
