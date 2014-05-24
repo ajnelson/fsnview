@@ -5,6 +5,11 @@ pkgdatadir="@datarootdir@/@PACKAGE@"
 PYTHON2="@PYTHON@"
 PYTHON3="@PYTHON3@"
 
+if [ $# -lt 3 ]; then
+  echo Usage: $0 image_path output_directory upartsfs_mount_directory
+  exit 1
+fi
+
 echo "DEBUG:analyze_with_py360.sh:\$@ = $@" >&2
 upartsfs_mount="$3"
 

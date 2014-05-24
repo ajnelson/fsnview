@@ -1,48 +1,50 @@
 #!/bin/bash
 
-if [ $# -lt 1 ]; then
-  echo Usage: $0 image_path output_directory
+prefix="@prefix@"
+pkgdatadir="@datarootdir@/@PACKAGE@"
+PYTHON3="@PYTHON3@"
+UXTAF="${prefix}/bin/uxtaf"
+
+if [ $# -lt 3 ]; then
+  echo Usage: $0 image_path output_directory upartsfs_mount_directory
   exit 1
 fi
 
-prefix="@prefix@"
-UXTAF="${prefix}/bin/uxtaf"
+echo "DEBUG:analyze_with_uxtaf.sh:\$@ = $@" >&2
+upartsfs_mount="$3"
 
-IMAGE="$1"
-OUTPUT="$2"
+#Set up array of partition arguments, formatted as cat_partitions.py will want them
+#(That program takes partitions prefixed with their within-disk byte offset, and a colon for delimiting)
+declare -a part_args
 
-rm -f uxtaf.info
+for x in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
+  part_image="${upartsfs_mount}/by_offset/$x"
+  echo "DEBUG:analyze_with_uxtaf.sh:part_image = $part_image" >&2
+  if [ -r "${part_image}" ]; then
+    errlog="uxtaf_${part_off}.err.log"
+    rm -f uxtaf.info
 
-#uxtaf's general construction of its XML:
-#Generate head, creating uxtaf.dfxml.
-#For each partition offset:
-#	Run uxtaf dfxml, creating uxtaf_$offset.dfxml.
-#	If dfxml succeeded, append uxtaf_$offset.dfxml to uxtaf.dfxml;
-#	Else if failed, append comment with exit status to uxtaf.dfxml.
-#Generate foot, appending to uxtaf.dfxml.
-$UXTAF dfxml_head "$IMAGE" >uxtaf.dfxml 2>>uxtaf.err.log
+    #Attach uxtaf to the partition image
+    "$UXTAF" attach "$part_image" $x >$x.dfxml.out.log 2>$x.dfxml.err.log
+    rc=$?
+    
+    #Generate DFXML if attachment worked.
+    if [ $rc == 0 ]; then
+      "$UXTAF" dfxml >$x.dfxml 2>>$x.dfxml.err.log
+      rc=$?
+    else
+      #TODO Somehow denote a failed partition?  Could use a write-flopped-partition-error-dfxml-file script to record an <error> element with volume metadata.
+    fi
 
-for part_off in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
-  errlog="uxtaf_${part_off}.err.log"
-  $UXTAF attach "$IMAGE" ${part_off} >uxtaf_${part_off}.out.log 2>$errlog && \
-    $UXTAF dfxml >uxtaf_${part_off}.dfxml 2>>uxtaf_${part_off}.err.log
-  rc=$?
-  echo $rc >uxtaf_${part_off}.status.log
+    #Record successful partitions.
+    if [ $rc == 0 ]; then
+      #This mess of characters is an append.  http://tldp.org/LDP/abs/html/arrays.html
+      part_args[${#part_args[@]}]="$x:$x.dfxml"
+    fi
 
-  #Emit the stderrs so all the errors are in the same place
-  if [ -s $errlog ]; then
-    echo >&2
-    echo "${0}: Note: From $errlog:" >&2
-    cat $errlog >&2
-    echo >&2
-  fi
-
-  if [ $rc -eq 0 ]; then
-    cat uxtaf_${part_off}.dfxml >>uxtaf.dfxml
-  else
-    echo "  <!-- Error: Unable to create process partition at ${part_off}.  uxtaf exited with status $rc.  See error log at uxtaf_${part_off}.err.log -->" >>uxtaf.dfxml
+    #Record ultimate exit status of this partition.
+    echo $rc >"$x.dfxml.status.log"
   fi
 done
-$UXTAF dfxml_foot >>uxtaf.dfxml 2>>uxtaf.err.log
 
-rm -f uxtaf.info
+"$PYTHON3" "${pkgdatadir}/python3/cat_partitions.py" --debug "${part_args[@]}" >uxtaf.dfxml
