@@ -25,15 +25,15 @@ for x in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
     rm -f uxtaf.info
 
     #Attach uxtaf to the partition image
-    "$UXTAF" attach "$part_image" $x >$x.dfxml.out.log 2>$x.dfxml.err.log
+    "$UXTAF" attach "$part_image" >$x.dfxml.out.log 2>$x.dfxml.err.log
     rc=$?
     
     #Generate DFXML if attachment worked.
     if [ $rc == 0 ]; then
       "$UXTAF" dfxml >$x.dfxml 2>>$x.dfxml.err.log
       rc=$?
-    else
-      #TODO Somehow denote a failed partition?  Could use a write-flopped-partition-error-dfxml-file script to record an <error> element with volume metadata.
+
+      #TODO Somehow denote a failed partition in the else branch?  Could use a write-flopped-partition-error-dfxml-file script to record an <error> element with volume metadata.
     fi
 
     #Record successful partitions.
