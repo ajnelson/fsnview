@@ -21,6 +21,7 @@ dist_fsnpy_PYTHON = \
 dist_fsnpysub_PYTHON = \
   py360/py360/__init__.py \
   py360/py360/Objects.py \
+  py360/py360/XTAFDFXML.py \
   py360/py360/account.py \
   py360/py360/constants.py \
   py360/py360/dfxml.py \
