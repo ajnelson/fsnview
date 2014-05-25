@@ -72,7 +72,7 @@ class Differ(object):
                 for diff in o.diffs:
                     c[diff] += 1
                     #Break out some stats further by file and directory
-                    if diff in ["filesize", "sha1"]:
+                    if diff in ["filesize", "sha1", "data_brs"]:
                         if o.name_type in ["d", "r"]:
                             simplified_name_type = o.name_type
                         else:
@@ -102,6 +102,7 @@ class Differ(object):
 
 class DifferTabulator(object):
 
+    #_diff_annos is the dictionary of labels for the statistics.
     #The OrderedDict here lets insertion order determine the metadata breakout order in the generated tables.
     _diff_annos = collections.OrderedDict()
 
@@ -128,7 +129,8 @@ class DifferTabulator(object):
         self._diff_annos["ctime"] = "Metadata change time"
         self._diff_annos["crtime"] = "Creation time"
         #self._diff_annos["name_brs"] = "Name entry location" #TODO This needs more testing.
-        self._diff_annos["data_brs"] = "Data byte run coverage"
+        self._diff_annos["data_brs/d"] = "Data byte runs (dirs)"
+        self._diff_annos["data_brs/r"] = "Data byte runs (files)"
 
     def _get_format_dict(self):
         if self._format_dict:
