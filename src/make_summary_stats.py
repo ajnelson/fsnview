@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.5" 
+__version__ = "0.2.6" 
 
 import argparse
 import logging
@@ -156,8 +156,10 @@ th.breakout {text-indent: 4em;}
     <tr><th>Partitions processed</th>%(html_row_s_parts_processed)s</tr>
     <tr><th>Allocated directories</th>%(html_row_s_allocated_dirs)s</tr>
     <tr><th>Allocated files</th>%(html_row_s_allocated_files)s</tr>
+    <tr><th>Allocated other</th>%(html_row_s_allocated_other)s</tr>
     <tr><th>Unallocated directories</th>%(html_row_s_unallocated_dirs)s</tr>
     <tr><th>Unallocated files</th>%(html_row_s_unallocated_files)s</tr>
+    <tr><th>Unallocated other</th>%(html_row_s_unallocated_other)s</tr>
   </tbody>
 </table>
 </body>
