@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.4" 
+__version__ = "0.2.5" 
 
 import argparse
 import logging
@@ -36,7 +36,11 @@ class Summarizer(object):
                     _logger.debug("Found a volume in %r." % xmlfile)
                     self.volumes.add(obj)
                 elif isinstance(obj, Objects.FileObject):
-                    self.broken_out_files[(obj.alloc, obj.name_type)] += 1
+                    if obj.alloc_inode is None and obj.alloc_name is None:
+                        alloc = obj.alloc
+                    else:
+                        alloc = obj.alloc_inode and obj.alloc_name
+                    self.broken_out_files[(alloc, obj.name_type)] += 1
             self.failed = False
         except Exception as e:
             self.failed = True
