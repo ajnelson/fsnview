@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.6" 
+__version__ = "0.2.7" 
 
 import argparse
 import logging
@@ -188,8 +188,10 @@ th.breakout {text-indent: 4em;}
 Partitions processed %(latex_row_s_parts_processed)s \\
 Allocated directories %(latex_row_s_allocated_dirs)s \\
 Allocated files %(latex_row_s_allocated_files)s \\
+Allocated other %(latex_row_s_allocated_other)s \\
 Unallocated directories %(latex_row_s_unallocated_dirs)s \\
 Unallocated files %(latex_row_s_unallocated_files)s \\
+Unallocated other %(latex_row_s_unallocated_other)s \\
 \hline
 \end{tabular}
 \end{center}
