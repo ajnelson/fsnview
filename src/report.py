@@ -39,7 +39,7 @@ def main():
     logging.debug("results_root = %r" % results_root)
 
     stuff = dict()
-    stuff["report_title"] = "Template"
+    stuff["report_title"] = "FSNView Analysis Report"
     print("""\
 <!DOCTYPE html>
 <html>
