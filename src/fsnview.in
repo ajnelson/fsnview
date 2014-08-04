@@ -1,20 +1,19 @@
 #!/bin/bash
 
-prefix=@prefix@
-pkgdatadir=@datarootdir@/@PACKAGE@
-PYTHON=@PYTHON@
-PYTHON3=@PYTHON3@
+prefix="@prefix@"
+pkgdatadir="@datarootdir@/@PACKAGE@"
+PYTHON="@PYTHON@"
+PYTHON3="@PYTHON3@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
 
 usage="Usage: $0 [options] command [options] [parameters]\n"
 usage=$usage"\n"
 usage=$usage"Commands:\n"
 usage=$usage"\n"
-usage=$usage"\txbox360 disk_image [output_directory]\n"
+usage=$usage"\txbox360 disk_image [output_directory=.]\n"
 usage=$usage"\t  Run all the below commands for an Xbox 360 disk image.  No options needed.\n"
-usage=$usage"\tparse [options] disk_image [output_directory]\n"
-usage=$usage"\t  Run parsers, requested with options, on the disk image.\n"
-usage=$usage"\ttabulate [options] output_directory\n"
-usage=$usage"\t  Compare DFXML supplied as options.  For example, to include Fiwalk output in the comparison pool, pass '--fiwalk=fiout.dfxml'.\n"
+usage=$usage"\tcompare [options] dfxml1 dfxml2 [dfxml ...] [output_directory=.]\n"
+usage=$usage"\t  Compare labeled DFXML supplied as arguments.  The labeling format is 'longlabel:shortlabel:path_to_dfxml', as required by make_diff_stats.py.  (View that script's help by passing the --help-labels flag to this program.\n"
 usage=$usage"\treport output_directory\n"
 usage=$usage"\t  View processing statistics of an output directory.\n"
 usage=$usage"\n"
@@ -22,53 +21,43 @@ usage=$usage"For commands where the output directory is optional, the default is
 usage=$usage"\n"
 usage=$usage"General options:\n"
 usage=$usage"\n"
-usage=$usage"\t-c cfg, --config=cfg\n"
-usage=$usage"\t  Use this configuration file (specifies labelling in reports)\n"
 usage=$usage"\t-d, --debug\n"
-usage=$usage"\t  Enable debug printing\n"
+usage=$usage"\t  Enable debug printing; pass twice to get verbose debug printing.\n"
 usage=$usage"\t-h, --help\n"
 usage=$usage"\t  Print this help menu and exit.\n"
-usage=$usage"\n"
-usage=$usage"Parsers:\n"
-usage=$usage"\n"
-usage=$usage"These storage system parsers can be passed as options to the 'parse' and 'tabulate' commands.\n"
-usage=$usage"\n"
-usage=$usage"--fiwalk\n"
-usage=$usage"--py360\n"
-usage=$usage"--uxtaf\n"
+usage=$usage"\t--help-labels\n"
+usage=$usage"\t  Print help for the program that needs the DFXML specifying-label format.\n"
 #usage=$usage"--dfxml_tool\n" #(Soon...)
 usage=$usage"\n"
 
 get_abspath() {
-  $PYTHON3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+  "$PYTHON3" -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
-config_file="$pkgdatadir/fsnview.cfg.sample"
 debug=0
 do_command_xbox360=0
-do_command_parse=0
-do_command_tabulate=0
-do_command_report=0
+do_command_compare=0
+
+#This is the exit status unmounting UPartsFS, checked after the end of the XBox 360 steps.
+umountrc=0
 
 #TODO Add GNU getopt
 
 #Parse options
 while [ $# -ge 1 ]; do
   case $1 in
-    -c | --config )
-      config_file="$2"
-      if [ ! -r "$config_file" ]; then
-        echo "Error: fsnview: Argument passed to $1 is not a readable file: '$2'." >&2
-        exit 1
-      fi
-      shift
-      ;;
     -d | --debug )
-      debug=1
+      debug=$(expr $debug + 1)
       ;;
     -h | --help )
       printf "$usage"
       exit 0
+      ;;
+    --help-labels )
+      printf "Executing documentation request for make_diff_stats.py ..."
+      set -x
+      "$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" -h
+      exit $?
       ;;
     * )
       break
@@ -76,113 +65,201 @@ while [ $# -ge 1 ]; do
   esac
   shift
 done
+
+test $debug -eq 2 && set -x
+
+#Debug printer
+_dprint() {
+  test $debug -gt 0 && echo "DEBUG:$(basename "$0"): $1" >&2
+}
+
+#Warning printer
+_wprint() {
+  echo "WARNING:$(basename "$0"): $1" >&2
+}
+
+#Error printer
+_eprint() {
+  echo "ERROR:$(basename "$0"): $1" >&2
+}
 
 if [ $# -lt 1 ]; then
   printf "$usage" >&2
   exit 1
 fi
 
-test $debug -eq 1 && set -x
-
 #Parse commands and their options
-declare -a argc_parse
-declare -a argc_tabulate
-declare -a argc_report
 case $1 in
   xbox360 )
       do_command_xbox360=1
-      do_command_parse=1
-      do_command_tabulate=1
-      do_command_report=1
     ;;
-  parse )
-      do_command_parse=1
-    ;;
-  tabulate )
-      do_command_tabulate=1
-    ;;
-  report )
-      do_command_report=1
+  compare )
+      do_command_compare=1
     ;;
   * )
-    echo "Error: fsnview: command not recognized: '$1'." >&2
+    _eprint "Command not recognized: '$1'."
     exit 1
     ;;
 esac
 shift
 
-if [ $do_command_parse -eq 1]; then
-declare -a target_dfxml
-target_dfxml_tally=0 #TODO Look up Bash array length syntax
-while [ $# -ge 1 ]; do
-  case $1 in
-    --fiwalk )
-        target_dfxml[$target_dfxml_tally]=fiwalk.dfxml
-        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
-      ;;
-    --py360 )
-        target_dfxml[$target_dfxml_tally]=py360.dfxml
-        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
-      ;;
-    --uxtaf )
-        target_dfxml[$target_dfxml_tally]=uxtaf.dfxml
-        target_dfxml_tally=$(expr $target_dfxml_tally + 1)
-      ;;
-    * )
-      break
-      ;;
-  esac
-  shift
-done
-if [ $target_dfxml_tally -lt 1 ]; then
-  echo "Error: You must request at least one target DFXML file with an optional parameter.  (Else, this program does nothing.)" >&2
+declare -a target_labeled_dfxml
+target_labeled_dfxml_tally=0 #TODO Look up Bash array length syntax
+
+if [ $do_command_xbox360 -eq 1 ]; then
+  disk_image="$1"
+  output_root="$(get_abspath "$2")"
+
+  if [ ! -r "$disk_image" ]; then
+    _eprint "Disk image file not readable."
+    exit 2
+  fi
+elif [ $do_command_compare -eq 1 ]; then
+  while [ $# -ge 1 ]; do
+    #Now expecting arguments to be labeled paths, or a directory specification.
+    _dprint "Inspecting for labeling: '$1'."
+
+    #Check path spec with a diagnostic flag
+    "$PYTHON3" "${pkgdatadir}/python3/make_summary_stats.py" --check-labeling "$1" 2>/dev/null
+    rc_check_path=$?
+    if [ $rc_check_path -eq 0 ]; then
+      target_labeled_dfxml[$target_labeled_dfxml_tally]="$1"
+      target_labeled_dfxml_tally=$(expr $target_labeled_dfxml_tally + 1)
+    else
+      #Check to see if this is a (possibly Windows) directory
+      colon_tally=$(echo "$1" | "$PYTHON3" -c "import sys ; print(len(sys.stdin.read().split(':')) - 1)")
+      if [ $colon_tally -gt 0 ]; then
+        "$PYTHON3" "${pkgdatadir}/python3/make_summary_stats.py" --check-labeling "$1"
+        exit $?
+      else
+        #Check to see if this is a file, colons forgotten
+        if [ -f "$1" -o -L "$1" ]; then
+          _eprint "Please apply long and short labels to this path, which this program assumes was meant to be a file input: '$1'."
+          exit 1
+        fi
+        output_root="$(get_abspath "$1")"
+        break
+      fi
+    fi
+    shift
+  done
+
+  if [ -z "$output_root" ]; then
+    output_root=$(get_abspath .)
+  fi
+fi
+
+#Make output directory, and change into it.
+mkdir -p "$output_root"
+pushd "$output_root"
+
+#Set up further output directories
+mkdir mnt
+mkdir summaries
+mkdir validation
+
+if [ $do_command_xbox360 -eq 1 ]; then
+  #Execute XBox360 analysis scripts -- idempotently when possible
+  _dprint "Executing XBox 360 analysis scripts."
+
+  #Need to mount the disk image with the XTAF-volume-aware UPartsFS
+  if [ $(mount | grep "$PWD/mnt" | wc -l) -eq 0 ]; then
+    "${pkgdatadir}/upartsfs/bin/upartsfs" mnt "$disk_image"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+      _eprint "Error mounting disk image with UPartsFS.  Aborting."
+      exit $rc
+    fi
+  fi
+
+  #Add the resulting DFXML paths to the comparison queue
+  if [ ! -r "${output_root}/dfxml/analyze_with_fiwalk.sh.done.log" ]; then
+    rm -rf "${output_root}/dfxml/analyze_with_fiwalk.sh*"
+    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_fiwalk.sh" "$disk_image" "${output_root}/dfxml/analyze_with_fiwalk.sh"
+    if [ $? -eq 0 ]; then
+      date >"${output_root}/dfxml/analyze_with_fiwalk.sh.done.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml" \
+        >"${output_root}/validation/fiwalk.dfxml" \
+        2>"${output_root}/validation/fiwalk.dfxml.err.log"
+      echo $? >"${output_root}/validation/fiwalk.dfxml.status.log"
+    fi
+  fi
+  target_labeled_dfxml[$target_labeled_dfxml_tally]="Fiwalk:fi:${output_root}/dfxml/analyze_with_fiwalk.sh/fiwalk.dfxml"
+  target_labeled_dfxml_tally=$(expr $target_labeled_dfxml_tally + 1)
+
+  if [ ! -r "${output_root}/dfxml/analyze_with_uxtaf.sh.done.log" ]; then
+    rm -rf "${output_root}/dfxml/analyze_with_uxtaf.sh*"
+    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_uxtaf.sh" "$disk_image" "${output_root}/dfxml/analyze_with_uxtaf.sh" "${output_root}/mnt"
+    if [ $? -eq 0 ]; then
+      date >"${output_root}/dfxml/analyze_with_uxtaf.sh.done.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml" \
+        >"${output_root}/validation/uxtaf.dfxml" \
+        2>"${output_root}/validation/uxtaf.dfxml.err.log"
+      echo $? >"${output_root}/validation/uxtaf.dfxml.status.log"
+    fi
+  fi
+  target_labeled_dfxml[$target_labeled_dfxml_tally]="Uxtaf:ux:${output_root}/dfxml/analyze_with_uxtaf.sh/uxtaf.dfxml"
+  target_labeled_dfxml_tally=$(expr $target_labeled_dfxml_tally + 1)
+
+  if [ ! -r "${output_root}/dfxml/analyze_with_py360.sh.done.log" ]; then
+    rm -rf "${output_root}/dfxml/analyze_with_py360.sh*"
+    "${pkgdatadir}/log_and_run_script.sh" "${pkgdatadir}/analyze_with_py360.sh" "$disk_image" "${output_root}/dfxml/analyze_with_py360.sh" "${output_root}/mnt"
+    if [ $? -eq 0 ]; then
+      date >"${output_root}/dfxml/analyze_with_py360.sh.done.log"
+      xmllint --format --schema "${pkgdatadir}/dfxml_schema/dfxml.xsd" \
+        "${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml" \
+        >"${output_root}/validation/py360.dfxml" \
+        2>"${output_root}/validation/py360.dfxml.err.log"
+      echo $? >"${output_root}/validation/py360.dfxml.status.log"
+    fi
+  fi
+  target_labeled_dfxml[$target_labeled_dfxml_tally]="Py360:p3:${output_root}/dfxml/analyze_with_py360.sh/py360.dfxml"
+  target_labeled_dfxml_tally=$(expr $target_labeled_dfxml_tally + 1)
+
+  #Clean up the UPartsFS mount
+  _dprint "Unmounting UPartsFS."
+  umount mnt || fusermount -u mnt
+  umountrc=$?
+  if [ $umountrc -ne 0 ]; then
+    _wprint "Encountered an error unmounting the disk image from UPartsFS.  You will probably need to unmount UPartsFS yourself." >&2
+  fi
+fi
+
+if [ ${target_labeled_dfxml[#]} -eq 0 ]; then
+  _eprint "No DFXML to process."
   exit 1
 fi
 
-imagefile="$1"
-imagefilebn="$(basename "$imagefile")"
-imagefileap="$(get_abspath "$imagefile")"
-outdir="$(get_abspath "${imagefilebn%.*}")"
+#Clean old results
+rm -f diffs.{tex,html}
+rm -f summary.{tex,html}
 
-if [ $debug -eq 1 ]; then
-  echo "fsnview: Debug: \$outdir: $outdir" >&2
-  echo "fsnview: Debug: \$imagefileap: $imagefileap" >&2
-  echo "fsnview: Debug: \$pkgdatadir: $pkgdatadir" >&2
+#Summarize tools' individual DFXMLs
+"$PYTHON3" "${pkgdatadir}/python3/make_summary_stats.py" "${target_labeled_dfxml[@]}"
+
+#TODO Output mactimelines for each tool's DFXML
+
+#Create differential DFXML
+"$PYTHON3" "${pkgdatadir}/python3/make_diff_stats.py" "${target_labeled_dfxml[@]}"
+
+for x in $(ls *-*.dfxml); do
+  #Write idifference-style summaries
+  "$PYTHON3" "${pkgdatadir}/python3/summarize_differential_dfxml.py" --sort-by path --summary $x >summaries/$x.txt
+
+  #Format differential DFXML
+  xmllint --format \
+    $x \
+    > "validation/$x" \
+    2> "validation/$x.err.log"
+done
+
+"$PYTHON3" "${pkgdatadir}/python3/report.py" --debug --fsnversion "$PACKAGE_VERSION" "$output_root" >report.html
+
+popd
+
+#Repeat warning
+if [ $umountrc -gt 0 ]; then
+  _wprint "Could not unmount disk image from UPartsFS.  This directory is still a mount point in use: '$PWD/mnt'."
 fi
-
-mkdir -p "$outdir"
-test $debug -eq 1 && echo "fsnview: Debug: Descending into output directory \"$outdir\"" >&2
-pushd "$outdir" >/dev/null
-
-# Analyze disk image
-make \
-  --directory="$outdir" \
-  --makefile="$pkgdatadir/nversion.mk" \
-  --keep-going \
-  FIWALK_MAYBE_ALLOC_ONLY="-O" \
-  PKGDATADIR="$pkgdatadir" \
-  PREFIX="$prefix" \
-  PYTHON="$PYTHON" \
-  PYTHON3="$PYTHON3" \
-  IMAGE="$imagefileap" \
-  "${target_dfxml[*]}"
-
-popd >/dev/null
-fi #do_command_parse
-
-if [ $do_command_report -eq 1 ]; then
-  "$pkgdatadir/report.sh" "$@"
-fi #do_command_report
-
-echo "Error: Lines below not implemented." >&2
-exit 1
-#TODO
-
-# Run reports
-debug_flag=
-if [ $debug -eq 1 ]; then
-  debug_flag="-d"
-fi
-"$pkgdatadir/compare.sh" $debug_flag .
-"$pkgdatadir/report.sh" $debug_flag .
-

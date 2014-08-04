@@ -43,16 +43,13 @@ fi
 
 AC_CONFIG_FILES([Makefile
                  deps/Makefile
-                 etc/Makefile
                  src/Makefile
-                 src/analyze.sh
                  src/analyze_with_fiwalk.sh
                  src/analyze_with_py360.sh
                  src/analyze_with_uxtaf.sh
                  src/compare.sh
                  src/fsnview
-                 src/log_and_run_script.sh
-                 src/report.sh])
+                 src/log_and_run_script.sh])
 AC_CONFIG_SUBDIRS([deps/sleuthkit
                    deps/uxtaf])
 AC_OUTPUT

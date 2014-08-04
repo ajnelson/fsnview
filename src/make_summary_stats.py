@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "0.2.7" 
+__version__ = "0.3.0" 
 
 import argparse
 import logging
@@ -210,19 +210,27 @@ def main():
 
     for labeled_xml_file in args.labeled_xml_file:
         parts = labeled_xml_file.split(":")
-        if len(parts) != 2:
-            raise ValueError("Argument error: The file specification must be label:path.")
+        #The 3 OR 4 is in case we're dealing with a Windows absolute path.
+        if not len(parts) in [3,4]:
+            raise ValueError("Argument error: The file specification must be longlabel:shortlabel:path.")
         prog = parts[0]
-        xml_path = parts[1]
+        xml_path = ":".join(parts[2:])
+        if not os.path.exists(xml_path):
+            raise ValueError("DFXML file not found: %r." % (xml_path))
 
-        tabulator.summarize(prog, xml_path)
+        if not args.check_labeling:
+            tabulator.summarize(prog, xml_path)
+
+    if args.check_labeling:
+        sys.exit(0)
 
     tabulator.write_latex("summary.tex")
     tabulator.write_html("summary.html")
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("labeled_xml_file", help="List of DFXML files, each colon-prefixed with a short label (e.g. 'Fiwalk:fiout.dfxml')", nargs="+")
+    argparser.add_argument("labeled_xml_file", help="List of DFXML files, each colon-prefixed with a long and short label (e.g. 'Fiwalk:fi:fiout.dfxml')", nargs="+")
+    argparser.add_argument("--check-labeling", help="Pre-run diagnostic: Check labeling of paths", action="store_true")
     argparser.add_argument("-d", "--debug", help="Enable debug printing", action="store_true")
     args = argparser.parse_args()
 
