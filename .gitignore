@@ -11,14 +11,25 @@ Makefile
 /aclocal.m4
 /build
 /compile
+/config.guess
 /config.log
 /config.status
+/config.sub
 /configure
 /depcomp
 /install-sh
 /missing
 /fsnview-*.tar.gz
 /py-compile
+/test-driver
+
+# Python
+src/__pycache__
 
 # fsnview-generated files
+/src/analyze_with_fiwalk.sh
+/src/analyze_with_py360.sh
+/src/analyze_with_uxtaf.sh
+/src/compare.sh
 /src/fsnview
+/src/log_and_run_script.sh

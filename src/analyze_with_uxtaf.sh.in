@@ -1,0 +1,50 @@
+#!/bin/bash
+
+prefix="@prefix@"
+pkgdatadir="@datarootdir@/@PACKAGE@"
+PYTHON3="@PYTHON3@"
+UXTAF="${prefix}/bin/uxtaf"
+
+if [ $# -lt 3 ]; then
+  echo Usage: $0 image_path output_directory upartsfs_mount_directory
+  exit 1
+fi
+
+echo "DEBUG:analyze_with_uxtaf.sh:\$@ = $@" >&2
+upartsfs_mount="$3"
+
+#Set up array of partition arguments, formatted as cat_partitions.py will want them
+#(That program takes partitions prefixed with their within-disk byte offset, and a colon for delimiting)
+declare -a part_args
+
+for x in 524288 2148007936 4496818176 4713021440 4847239168 5115674624; do
+  part_image="${upartsfs_mount}/by_offset/$x"
+  echo "DEBUG:analyze_with_uxtaf.sh:part_image = $part_image" >&2
+  if [ -r "${part_image}" ]; then
+    errlog="uxtaf_${part_off}.err.log"
+    rm -f uxtaf.info
+
+    #Attach uxtaf to the partition image
+    "$UXTAF" attach "$part_image" >$x.dfxml.out.log 2>$x.dfxml.err.log
+    rc=$?
+    
+    #Generate DFXML if attachment worked.
+    if [ $rc == 0 ]; then
+      "$UXTAF" dfxml >$x.dfxml 2>>$x.dfxml.err.log
+      rc=$?
+
+      #TODO Somehow denote a failed partition in the else branch?  Could use a write-flopped-partition-error-dfxml-file script to record an <error> element with volume metadata.
+    fi
+
+    #Record successful partitions.
+    if [ $rc == 0 ]; then
+      #This mess of characters is an append.  http://tldp.org/LDP/abs/html/arrays.html
+      part_args[${#part_args[@]}]="$x:$x.dfxml"
+    fi
+
+    #Record ultimate exit status of this partition.
+    echo $rc >"$x.dfxml.status.log"
+  fi
+done
+
+"$PYTHON3" "${pkgdatadir}/python3/cat_partitions.py" --debug "${part_args[@]}" >uxtaf.dfxml

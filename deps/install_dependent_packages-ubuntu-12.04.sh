@@ -18,8 +18,4 @@ if [ -r /etc/debian_version ]; then
     zlib1g-dev
 fi
 #TODO
-#    afflib-tools \
-#    ewf-tools \
-#    libafflib-dev \
-#    libewf-dev \
 #    libexpat1-dev \

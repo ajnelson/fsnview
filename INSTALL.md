@@ -11,4 +11,4 @@ Last, run the normal installation calls:
     make
     make install
 
-(`./configure` respects `--prefix`.)
+`./configure` respects `--prefix`.  A build dependency quirk in UPartsFS means that `./bootstrap.sh` also accepts the environment variable `$prefix`, which should match what you pass to `./configure`.

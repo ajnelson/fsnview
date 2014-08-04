@@ -12,6 +12,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
 dnl Search for Python 2.7.3, which catches the MacPorts version in OS X.  Linuxes should be on 2.7.3 as well.
+m4_define_default([_AM_PYTHON_INTERPRETER_LIST],[python2 python2.7])
 AM_PATH_PYTHON(2.7.3)
 AC_CHECK_PROGS(PYTHON3, [python3.3 python3.2 python3.1 python3])
 if test "x$PYTHON3" == "x"; then
@@ -42,8 +43,13 @@ fi
 
 AC_CONFIG_FILES([Makefile
                  deps/Makefile
+                 src/Makefile
+                 src/analyze_with_fiwalk.sh
+                 src/analyze_with_py360.sh
+                 src/analyze_with_uxtaf.sh
+                 src/compare.sh
                  src/fsnview
-                 src/Makefile])
+                 src/log_and_run_script.sh])
 AC_CONFIG_SUBDIRS([deps/sleuthkit
                    deps/uxtaf])
 AC_OUTPUT
