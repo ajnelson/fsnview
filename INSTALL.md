@@ -12,3 +12,5 @@ Last, run the normal installation calls:
     make install
 
 `./configure` respects `--prefix`.  A build dependency quirk in UPartsFS means that `./bootstrap.sh` also accepts the environment variable `$prefix`, which should match what you pass to `./configure`.
+
+If it looks like The SleuthKit is building twice, it is.  That's the UPartsFS quirk.  It is not a permanent quirk.
